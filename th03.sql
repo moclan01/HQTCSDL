@@ -340,3 +340,60 @@ set @index = @index + 1
 end
 
 select * from MONHOC;
+
+--Function
+--1. Tạo hàm F_DTB cho biết điểm trung bình các môn thi của học viên. Mỗi môn thi, chỉ lấy điểm của lần thi 
+--sau cùng (mã học viên là tham số của hàm).
+create function f_dtb(@mahv varchar(20))
+returns float
+as
+begin
+	return(
+		select avg(DIEM)
+		from ketquathi inner join hocvien on ketquathi.mahv = hocvien.mahv
+		where hocvien.mahv = @mahv	and ketquathi.lanthi in (select max(ketquathi.lanthi)
+																from ketquathi
+																where mahv = @mahv
+																group by mahv)
+
+		group by hocvien.mahv
+	)
+end
+
+print(dbo.f_dtb('k1102'));
+select dtb from dbo.f_dtb('k1102');
+drop function f_dtb;
+
+--2. Tạo hàm F_XL có mã học viên là tham số, cho biết kết quả xếp loại của học viên như sau: 
+-- Nếu DIEMTB ≥ 9 thì XEPLOAI =”XS” 
+-- Nếu 8 ≤ DIEMTB < 9 thì XEPLOAI = “G” 
+-- Nếu 6.5 ≤ DIEMTB < 8 thì XEPLOAI = “K” 
+-- Nếu 5 ≤ DIEMTB < 6.5 thì XEPLOAI = “TB” 
+-- Nếu DIEMTB < 5 thì XEPLOAI = ”Y” .
+
+create function f_xl(@mahv varchar(20))
+returns varchar(2)
+as
+begin
+	declare @dtb float = dbo.f_dtb(@mahv)
+	if (@dtb >= 9)
+	begin 
+		return 'XS';
+	end
+	if (8 <= @dtb and @dtb < 9)
+	begin 
+		return 'G';
+	end
+	if (6.5 <= @dtb and @dtb < 8)
+	begin 
+	return 'K';
+	end
+	if (5 <= @dtb and @dtb < 6.5)
+	begin 
+		return 'TB';
+	end
+	return 'Y';
+end
+
+print(dbo.f_xl('K1101'));
+drop function f_xl;
