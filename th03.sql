@@ -397,3 +397,53 @@ end
 
 print(dbo.f_xl('K1101'));
 drop function f_xl;
+
+--3. Tạo hàm F_DSMON cho biết danh sách điểm các môn học mà học viên có kết quả ‘đạt’.
+-- Danh sách gồm: MAMH, TENMH, ĐIỂM
+-- Mã học viên là tham số của hàm
+create function f_dsmon(@mahv varchar(20))
+returns table
+as
+	return( 
+		select monhoc.mamh, monhoc.tenmh, ketquathi.diem
+		from monhoc inner join ketquathi on monhoc.mamh = ketquathi.mamh
+				inner join hocvien on hocvien.mahv = ketquathi.mahv
+		where hocvien.mahv = @mahv and ketquathi.kqua = 'Dat' 
+	);
+
+select * from dbo.f_dsmon('K1101');
+drop function f_dsmon;
+
+--4. Tạo hàm F_DSGV cho biết danh sách giáo viên đã dạy hết các môn mà khoa phụ trách. Hàm có tham 
+--số là mã khoa
+create function f_dsgv(@makhoa varchar(20))
+returns table
+as
+	return(
+		select giaovien.magv, giaovien.hoten, monhoc.tenmh, khoa.makhoa  
+		from giaovien inner join khoa on giaovien.makhoa = khoa.makhoa
+			inner join giangday on giaovien.magv = giangday.magv
+				inner join monhoc on monhoc.mamh = giangday.mamh
+		where giangday.mamh in (select mamh from monhoc where makhoa = @makhoa)
+	);
+
+select * from dbo.f_dsgv('HTTT');
+drop function f_dsgv;
+
+--5. Tạo hàm trả về danh sách học viên và kết quả xếp loại từng học viên của lớp.
+-- Thông tin gồm: MAHV, Họ & tên HV, Điểm trung bình, xếp loại.
+-- Mã lớp là tham số của hàm
+
+create function f_dshv(@malop varchar(20))
+returns table
+as
+	return(
+		select hocvien.mahv, dbo.f_dtb(hocvien.mahv) as dtb, dbo.f_xl(hocvien.mahv) as xeploai
+		from hocvien
+		where hocvien.malop = @malop
+	);
+
+select * from dbo.f_dshv('K12');
+drop function f_dshv;
+
+--Procedures
