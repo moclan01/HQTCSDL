@@ -1,5 +1,4 @@
-﻿
-
+﻿--table
 
 CREATE TABLE NHACC(
 	MaNCC varchar(8) ,
@@ -8,7 +7,6 @@ CREATE TABLE NHACC(
 	DTNCC varchar(10) ,
 	PRIMARY KEY (MaNCC)
 );
-
 
 CREATE TABLE LoaiNGK(
 	MaLoaiNGK varchar(8) ,
@@ -43,6 +41,7 @@ CREATE TABLE DDH(
 	PRIMARY KEY (SODDH),
 	FOREIGN KEY (MaNCC) REFERENCES NHACC (MaNCC)
 );
+
 CREATE TABLE CT_DDH(
 	SODDH varchar(8) ,
 	MaNGK varchar(8) ,
@@ -59,6 +58,7 @@ CREATE TABLE PHIEUGH(
 	PRIMARY KEY (SoPGH),
 	FOREIGN KEY (SODDH) REFERENCES DDH (SODDH)
 );
+
 CREATE TABLE CT_PGH(
 	SoPGH varchar(8) ,
 	MaNGK varchar(8) ,
@@ -68,6 +68,7 @@ CREATE TABLE CT_PGH(
 	FOREIGN KEY (MaNGK) REFERENCES NGK (MaNGK),
 	FOREIGN KEY (SoPGH) REFERENCES PHIEUGH (SoPGH)
 );
+
 CREATE TABLE HOADON(
 	SoHD varchar(8) ,
 	NgayLapHD date ,
@@ -75,6 +76,7 @@ CREATE TABLE HOADON(
 	PRIMARY KEY (SoHD),
 	FOREIGN KEY (MaKH) REFERENCES KH (MaKH)
 );
+
 CREATE TABLE CT_HOADON(
 	SoHD varchar(8) ,
 	MaNGK varchar(8) ,
@@ -92,6 +94,7 @@ CREATE TABLE PHIEUHEN(
 	PRIMARY KEY (SoPH),
 	FOREIGN KEY (MaKH) REFERENCES KH (MaKH)
 );
+
 CREATE TABLE CT_PH(
 	SoPH varchar(8) ,
 	MaNGK varchar(8) ,
@@ -100,6 +103,7 @@ CREATE TABLE CT_PH(
 	FOREIGN KEY (MaNGK) REFERENCES NGK (MaNGK),
 	FOREIGN KEY (SoPH) REFERENCES PHIEUHEN (SoPH)
 );
+
 CREATE TABLE PHIEUTRANO(
 	SoPTN varchar(8) ,
 	NgayTra date ,
@@ -108,8 +112,6 @@ CREATE TABLE PHIEUTRANO(
 	PRIMARY KEY (SoPTN),
 	FOREIGN KEY (SoHD) REFERENCES HOADON (SoHD)
 );
-
-
 
 SET DATEFORMAT dmy;  
 
@@ -130,7 +132,6 @@ INSERT INTO LoaiNGK(MaLoaiNGK,TenLoaiNGK,MaNCC)
 VALUES('NK3','Trà','NC1');
 INSERT INTO LoaiNGK(MaLoaiNGK,TenLoaiNGK,MaNCC)
 VALUES('NK4','Sữa','NC2');
-
 
 -- NGK
 INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
@@ -188,7 +189,6 @@ VALUES ('DDH04', 'CC1', 8);
 INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
 VALUES ('DDH04', 'ST2', 12);
 
-
 -- KH
 INSERT INTO KH(MaKH,TenKH,DCKH,DTKH)
 VALUES('KH01','Cửa hàng BT','144 XVNT','088405996');
@@ -206,8 +206,6 @@ INSERT INTO DDH(SODDH,NgayDH,MaNCC)
 VALUES('DDH03','26-05-2011','NC2');
 INSERT INTO DDH(SODDH,NgayDH,MaNCC)
 VALUES('DDH04','3-06-2011','NC2');
-
-
 
 --PHIEUGH
 INSERT INTO PHIEUGH(SoPGH,NgayGH,SODDH)
@@ -302,7 +300,7 @@ VALUES ('PTN04', '15-06-2010', '1020000', 'HD03');
 INSERT INTO PHIEUTRANO(SoPTN, NgayTra, SoTienTra, SoHD)
 VALUES ('PTN05', '01-07-2010', '1080000', 'HD03');
 
-
+--query
 -- 1. Liet ke cac NGK va cac loai NGK tuong ung
 select * from NGK inner join LoaiNGK on NGK.MaLoaiNGK = LoaiNGK.MaLoaiNGK;
 
@@ -358,13 +356,6 @@ group by NGK.TenNGK;
 
 -- 10. Hien thi don dat hang da dat ngk voi so luong nhieu nhat so voi cac DDH khac co dat ngk do.(*)
 -- Thong tin hien thi: SoDDH, MaNGK, SLDatNhieuNhat
---select soddh, mangk, sum(sldat) as SLDatNhieuNhat
---from ct_ddh
---group by soddh, mangk
---having sum(sldat) >= all (select sum(sldat)
---											from ct_ddh
---											group by mangk);
-
 select * 
 from CT_DDH
 where SLDat in (select max(SLDat) as SLDatNhieuNhat
@@ -547,7 +538,7 @@ where DATEPART(year, HOADON.NgayLapHD) = 2010
 group by KH.MaKH, KH.TenKH, KH.DCKH, KH.DTKH;
 
 
--- VIEWs
+-- views
 -- 1. Tao view V_NGK tong hop du lieu ve tung NGK da duoc ban. Cau  truc View bao gom cac thuoc tinh: MaNGK, TenNGK, Quycach, SoLuongBan, TongTien = DonGiaBan * So luong
 
 create view V_NGK 
@@ -682,14 +673,12 @@ go;
 
 exec sp_insert_CTPGH 'PGH05', 'OD', 7, 6000;
 
-
 select * from CT_PGH;
 
 --8. Tạo thủ tục có tên sp_delete_CTPH nhận vào các tham số tương ứng với thông tin của một dòng trong 
 --chi tiết phiếu hẹn, thực hiện các yêu cầu sau:
 -- Xóa dòng trương ứng trong chi tiết phiếu hẹn
 --Nếu phiếu hẹn tương ứng không còn dòng chi tiết thì xóa luôn phiếu hẹn đó
-
 CREATE PROC sp_delete_CTPH @SOPH VARCHAR(8), @MANGK VARCHAR(8), @SLHen int
 AS
 BEGIN
@@ -719,8 +708,6 @@ WHERE HOADON.NgayLapHD BETWEEN @Ngay1 AND @Ngay2;
 
 select * from f_list('20-1-2010','20-1-2012');
 
-
-
 --2. Tạo hàm f_max cho biết ĐĐH đã đặt NGK với số lượng nhiều nhất so với các ĐĐH khác có đặt NGK 
 --đó. Thông tin hiển thị: SoDDH, MaNGK, [SL đặt nhiều nhất].
 CREATE FUNCTION  f_max()
@@ -733,8 +720,6 @@ RETURN
 
 SELECT * FROM f_max();
 SELECT * FROM CT_DDH;
-
-
 
 --3. Tạo hàm f_kh hiển thị thông tin của khách hàng có giao dịch với cửa hàng nhiều nhất (căn cứ
 --vào số lần mua hàng).
@@ -749,6 +734,7 @@ RETURN SELECT KH.* FROM KH
 						);
 
 SELECT * FROM f_kh();
+
 --4. Tạo hàm f_xlkh nhận vào tham số @MaKH, tính tổng tiền khách hàng đã trả
 --(TongTien=sum(SLKHMua*DGBan)). Sau đó hàm trả về kết quả xếp loại khách hàng như sau:
 -- Nếu TongTien>800.000 : xếp loại “KH VIP”

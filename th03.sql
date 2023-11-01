@@ -447,3 +447,107 @@ select * from dbo.f_dshv('K12');
 drop function f_dshv;
 
 --Procedures
+
+--1. Tạo thủ tục P_KQMH, cho biết bảng điểm của học viên (p_mahv). 
+-- Thông tin gồm: Mã học viên, tên học viên, mã môn học, tên môn học, điểm (chỉ lấy điểm của lần 
+--thi cuối cùng), kết quả
+-- Thủ tục nhận tham số đầu vào là mã học viên (p_mahv)
+use TH03
+go
+
+create procedure p_kqmh @p_mahv varchar(20)
+as
+	select hocvien.mahv, hocvien.ho, hocvien.ten, ketquathi.mamh, monhoc.tenmh, ketquathi.diem, ketquathi.kqua
+	from hocvien inner join ketquathi on hocvien.mahv = ketquathi.mahv
+			inner join monhoc on ketquathi.mamh = monhoc.mamh
+	where hocvien.mahv = @p_mahv and ketquathi.lanthi in (select max(lanthi)
+															from ketquathi
+															where ketquathi.mahv = @p_mahv
+															group by mamh)
+go;
+
+create proc p_kqmh @p_mahv varchar(10)
+as 
+select HOCVIEN.MAHV,HOCVIEN.HO, HOCVIEN.TEN, MONHOC.MAMH, MONHOC.TENMH, KETQUATHI.DIEM
+from HOCVIEN inner join KETQUATHI on HOCVIEN.MAHV = KETQUATHI.MAHV
+inner join MONHOC on MONHOC.MAMH = KETQUATHI.MAMH
+where HOCVIEN.MAHV = @p_mahv and KETQUATHI.LANTHI in (select MAX(LANTHI)
+							from KETQUATHI 
+							where KETQUATHI.MAHV = @p_mahv
+							group by MAMH)
+go;
+exec p_kqmh 'K1102'; 
+drop proc p_kqmh;
+
+--2. Tạo thủ tục P_GVMH, cho biết danh sách sinh viên học môn (p_mamh) do giáo viên (p_mgv) phụ trách 
+--trong học kỳ (p_hocky), năm học (p_nam).
+--Thông tin gồm: Mã GV, mã môn học, mahv, ho&ten hoc vien 
+--Thủ tục nhận các tham số đầu vào là mã môn học (p_mamh), mã giáo viên (p_mgv), học kỳ
+--(p_hocky), năm học (p_nam).
+
+use TH03
+go
+
+create proc p_gvmh @p_mamh varchar(20), @p_magv varchar(20), @p_hocky int, @p_nam int
+as
+	select giaovien.magv, giangday.mamh, hocvien.mahv, hocvien.ho, hocvien.ten
+	from hocvien inner join lop on hocvien.malop = lop.malop 
+			inner join giangday on lop.malop = giangday.malop
+			inner join giaovien on giaovien.magv = giangday.magv
+	where giangday.mamh = @p_mamh and giaovien.magv = @p_magv and giangday.hocky = @p_hocky and giangday.nam = @p_nam
+go;
+
+exec p_gvmh 'CTDLGT', 'GV15', 2, 2006;
+drop proc p_gvmh;
+
+--3. Tạo thủ tục P_LOP cho biết danh sách học viên của lớp (p_malop).
+-- Thông tin gồm: mã lớp, mgvcn, tên gv chủ nhiệm, tên trưởng lớp, mahv, ho&ten học viên.
+-- Thủ tục nhận 1 tham số đầu vào là mã lớp (p_malop)
+create proc p_lop @p_malop varchar(20)
+as
+	declare @ten_truonglop varchar(200)
+	select @ten_truonglop = hocvien.ten
+	from hocvien inner join lop on hocvien.mahv = lop.trglop
+	where lop.malop = @p_malop;
+
+	select lop.malop, lop.magvcn, giaovien.hoten as gvcn, @ten_truonglop as tentruonglop, hocvien.mahv, hocvien.ho, hocvien.ten
+	from hocvien inner join lop on hocvien.malop = lop.malop
+		inner join giaovien on lop.magvcn = giaovien.magv
+	where lop.malop = @p_malop
+go;
+
+exec p_lop 'K11';
+drop proc p_lop;
+
+--4. Tạo thủ tục P_TOPN liệt kê danh sách n môn học có số lượng học đăng ký học nhiều nhất.
+--Thông tin gồm: Mã môn học, tên môn học, số lượng học viên
+--Thủ tục nhận 1 tham số đầu vào là n.
+create proc p_topn @n int
+as
+select top(@n) monhoc.mamh, monhoc.tenmh, count(hocvien.mahv) as sldk
+from monhoc inner join giangday on monhoc.mamh = giangday.mamh
+		inner join lop on giangday.malop = lop.malop
+		inner join hocvien on lop.malop = hocvien.malop
+group by monhoc.mamh, monhoc.tenmh
+order by count(hocvien.mahv) desc
+go;
+
+exec p_topn 5;
+
+--5. Tạo thủ tục P_TK, thống kê số lượng học viên của từng môn học mà giáo viên (p_magv) đã phụ trách 
+--giảng dạy. 
+-- Thông tin gồm: MAGV, tên gv, mamh, tenmh, số lượng học viên
+-- Thủ tục nhận 1 tham số đầu vào là mã giáo viên (p_magv).
+create proc p_tk @p_magv varchar(20)
+as
+select giaovien.magv, giaovien.hoten, monhoc.mamh, monhoc.tenmh, count(hocvien.mahv) as slhv
+from hocvien inner join lop on hocvien.malop = lop.malop
+	inner join giangday on giangday.malop = lop.malop
+	inner join monhoc on monhoc.mamh = giangday.mamh
+	inner join giaovien on giaovien.magv = giangday.magv
+where giaovien.magv = @p_magv
+group by giaovien.magv, giaovien.hoten, monhoc.mamh, monhoc.tenmh
+go;
+
+exec p_tk 'GV15';
+drop proc p_tk;
