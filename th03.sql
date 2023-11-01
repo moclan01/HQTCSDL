@@ -548,6 +548,5 @@ from hocvien inner join lop on hocvien.malop = lop.malop
 where giaovien.magv = @p_magv
 group by giaovien.magv, giaovien.hoten, monhoc.mamh, monhoc.tenmh
 go;
-
 exec p_tk 'GV15';
 drop proc p_tk;
