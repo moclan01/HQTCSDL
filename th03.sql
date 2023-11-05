@@ -550,3 +550,283 @@ group by giaovien.magv, giaovien.hoten, monhoc.mamh, monhoc.tenmh
 go;
 exec p_tk 'GV15';
 drop proc p_tk;
+
+--Trigger
+--1.Học viên thi một môn tối đa 3 lần.
+create trigger ketquathi_insert_update on ketquathi after insert,update,delete
+as
+begin
+	declare @mahv varchar(20), @mamh varchar(20), @solanthi int
+	select @mahv = inserted.mahv, @mamh=inserted.mamh from inserted 
+	set @solanthi = (select max(lanthi) from ketquathi 
+						where mahv = @mahv and mamh = @mamh)
+	if(@solanthi > 3)
+		begin
+			raiserror('Mot hoc vien khong duoc thi mot mon qua 3 lan', 16,1);
+			rollback;
+		end			
+end
+
+drop trigger ketquathi_insert_update;
+
+insert into KETQUATHI
+values
+('K1104', 'CTRR', 4, '30/6/2006', 5.00, 'Dat');
+
+-- 2. Học kỳ chỉ có giá trị từ 1 đến 3.
+create trigger giangday_insert_update on giangday after insert,update,delete
+as 
+begin
+	declare @hocky int
+	set @hocky = (select hocky from inserted)
+	if(@hocky < 1 or @hocky >3)
+		begin
+		raiserror('hoc ky chi co gia tri tu 1 -3', 16,1);
+		rollback;
+		end
+end;
+
+drop trigger giangday_insert_update;
+
+insert into GIANGDAY
+values
+('K13', 'LRCFW', 'GV07', 4, 2008, '2/1/2006', '12/5/2006');
+
+--3. Học vị của giáo viên chỉ có thể là “CN”, “KS”, “Ths”, ”TS”, ”PTS”.
+ create trigger hocvigiaovien_insert_update on giaovien after insert, update,delete
+ as
+ begin
+	declare @hocvi varchar(20)
+	set @hocvi = (select hocvi from inserted)
+	if(@hocvi not in ('CN', 'KS', 'Ths', 'TS', 'PTS'))
+	begin
+		raiserror('hoc vi giao vien khong hop le',16,1);
+		rollback;
+	end
+ end;
+
+ drop trigger hocvigiaovien_insert_update;
+ --4. Học viên ít nhất là 18 tuổi.
+ create trigger tuoihocvien on  hocvien after insert, update, delete
+ as
+ begin
+	declare @tuoi int
+	set @tuoi = (select DATEPART(year,GETDATE() - DATEPART(year,ngsinh)
+					from inserted
+				)
+	if(@tuoi < 18)
+		begin
+		raiserror('hoc vien chua du tuoi',16,1);
+		rollback;
+		end
+ end;
+
+ --5. Giảng dạy một môn học ngày bắt đầu (TUNGAY) phải nhỏ hơn ngày kết thúc 
+--(DENNGAY).
+create trigger thoigiangiangday on giangday after insert, update, delete
+as
+begin
+	declare @tungay date
+	declare @denngay date
+	set @tungay = (select tungay from inserted)
+    set @denngay = (select denngay from inserted)
+
+--	select @tungay = TUNGAY, @denngay = DENNGAY from inserted;
+	if(@tungay > @denngay)
+		begin
+		raiserror('ngay bat dau phai nho hon ngay ket thuc', 16,1);
+		rollback;
+		end
+end;
+
+drop trigger thoigiangiangday;
+
+--6. Giáo viên khi vào làm ít nhất là 22 tuổi.
+create trigger tuoigiavien on giaovien after insert,update,delete
+as
+begin
+	declare @tuoi int
+	set @tuoi = (select DATEPART(year,GETDATE()) - DATEPART(year,ngsinh)
+					from inserted);
+
+	if(@tuoi < 22)
+		begin
+		raiserror('giao vien chua du tuoi', 16,1);
+		rollback;
+		end
+end;
+
+drop trigger tuoigiaovien;
+
+--7. Tất cả các môn học đều có số tín chỉ lý thuyết và tín chỉ thực hành chênh lệch 
+--nhau không quá 3
+create trigger monhoc_tinchi on monhoc after insert,update,delete
+as
+begin
+	declare @tc_lt int, @tc_th int;
+
+	select @tc_lt = TCLT, @tc_th = TCTH from inserted;
+
+	if (abs(@tc_lt - @tc_th) > 3)
+	begin 
+		raiserror('Cac mon hoc co TCLT va TCTH khong lech nhau qua 3TC', 16, 1);
+		rollback;
+	end
+end;
+
+--8. Mỗi học kỳ của một năm học, một lớp chỉ được học tối đa 3 môn
+create trigger mon_hocky_lop on giangday after insert,update,delete
+as
+begin
+	declare @countmon int, @hocky int
+	set @hocky = (select hocky
+					from inserted
+					)
+
+	set @countmon = (select count(mamh)
+						from giangday
+						where hocky = @hocky
+						group by malop)
+	 if(@countmon > 3)
+		begin
+			raiserror ('Moi mot lop chi duoc hoc toi da 3 mon trong hoc ky',16,1);
+			rollback;
+		end
+end;
+
+drop trigger mon_hocky_lop;
+
+insert into GIANGDAY(MALOP, MAMH, MAGV, HOCKY, NAM, TUNGAY, DENNGAY)
+values
+('K11', 'NMCNPM', 'GV07', 1, 2006, '2/1/2006', '12/5/2006');
+
+--9. Sỉ số của một lớp bằng với số lượng học viên thuộc lớp đó.
+create trigger sisolop on lop after insert, update, delete
+as
+begin
+	declare @count_hocvien int
+	set @count_hocvien = ( select count(mahv)
+							from hocvien inner join inserted on hocvien.malop = inserted.malop
+							group by hocvien.malop
+						)
+	if(@count_hocvien <> (select siso from inserted))
+		begin
+		raiserror('Si so phai bang so luong hoc vien cua lop do', 16, 1);
+		rollback	
+		end
+end;
+
+--10. Trong quan hệ DIEUKIEN giá trị của thuộc tính MAMH và MAMH_TRUOC trong 
+--cùng một bộ không được giống nhau (“A”,”A”) và cũng không tồn tại hai bộ
+--(“A”,”B”) và (“B”,”A”).
+create trigger dieukien_monhoc on dieukien after update,insert,delete
+as
+begin
+	declare @mamh varchar(20), @mamh_truoc varchar(20)
+	set @mamh = (select mamh from inserted)
+	set @mamh_truoc = (select mamh_truoc from inserted)
+
+	if(@mamh = @mamh_truoc)
+		begin
+			raiserror('Ma mon hoc va ma mon hoc truoc khong duoc giong nhau', 16, 1);
+			rollback;
+		end
+	if exists (select * from dieukien where mamh = @mamh and mamh_truoc = @mamh_truoc)
+		begin
+			raiserror('Ma mon hoc va ma mon hoc truoc khong duoc phu thuoc nhau', 16, 1);
+		rollback;
+		end
+end;
+
+--11. Các giáo viên có cùng học vị, học hàm, hệ số lương thì mức lương bằng nhau.
+create trigger giaovien_luong_insert_update on GIAOVIEN after insert, update
+as
+begin
+	declare @hocvi nvarchar(3000), @hocham nvarchar(3000), @muc_luong int, @mucluong_ud_ins int;
+
+	select @hocvi = HOCVI, @hocham = HOCHAM, @mucluong_ud_ins = MUCLUONG from inserted;
+
+	set @muc_luong = (select top(1) MUCLUONG from GIAOVIEN where HOCVI = @hocvi and HOCHAM = @hocham);
+
+	if (@muc_luong <> @mucluong_ud_ins)
+	begin 
+		raiserror('Muc luong cua giao vien chua hop ly', 16, 1);
+		rollback;
+	end
+end;
+
+insert into GIAOVIEN(MAGV, HOTEN, HOCVI, HOCHAM, GIOITINH, NGSINH, NGVL, HESO, MUCLUONG, MAKHOA)
+values
+('GV16', 'Ho Thanh Son', 'PTS', 'GS', 'Nam', '2/5/1950', '11/1/2004', 5.00, 2260000, 'KHMT');
+
+delete from GIAOVIEN where MAGV = 'GV16';
+
+--12. Học viên chỉ được thi lại (lần thi >1) khi điểm của lần thi trước đó dưới 5.
+create trigger ketqua_thilai on KETQUATHI after insert
+as
+begin
+	declare @mahv varchar(10), @mamh varchar(10), @solanthi int, @diem float;
+
+	select @mahv = MAHV, @mamh = MAMH from inserted;
+
+	set @solanthi = (select LANTHI - 1 from inserted);
+
+	set @diem = (select KETQUATHI.DIEM from KETQUATHI
+	where KETQUATHI.MAMH = @mamh and KETQUATHI.MAHV = @mahv and KETQUATHI.LANTHI = @solanthi);
+
+	if (@diem >= 5)
+	begin 
+		raiserror('Thong tin thi lai khong hop le', 16, 1);
+		rollback;
+	end
+end;
+
+drop trigger ketqua_thilai;
+
+insert into KETQUATHI
+values
+('K1305', 'CTRR', 2, '13/05/2006', 10.00, 'Dat');
+
+delete from KETQUATHI where  MAHV = 'K1305' and MAMH = 'CTRR' and LANTHI = 2;
+
+select * from KETQUATHI;
+
+--13. Ngày thi của lần thi sau phải lớn hơn ngày thi của lần thi trước (cùng học viên, 
+--cùng môn học).
+create trigger ngaythi_lansau on ketquathi after insert, update,delete
+as
+begin
+	declare  @mahv varchar(10), @mamh varchar(10), @ngaythitruoc date, @ngaythihientai date, @solanthitruoc int;
+	select @mahv = mahv, @mamh = mamh , @solanthitruoc = lanthi - 1, @ngaythihientai = ngthi from inserted;
+	select @ngaythitruoc = ngthi from ketquathi where mahv=@mahv and mamh = @mamh and lanthi = @solanthitruoc
+	if(@ngaythihientai <= @ngaythitruoc)
+		begin
+			raiserror('Ngay thi hien tai phai lon hon  ngay thi truoc', 16, 1);
+			rollback;
+		end
+end;
+
+insert into KETQUATHI
+values
+('K1303', 'THDC', 2, '20/05/2005', 4.50, 'Khong Dat');
+
+--14. Giáo viên chỉ được phân công dạy những môn thuộc khoa giáo viên đó phụ trách.
+create trigger giangday_khoaphutrach on giangday after insert,update
+as
+begin
+	declare @mamh varchar(20), @magv varchar(20), @makhoa varchar(20)
+
+	select @magv = magv, @mamh = mamh from inserted
+	set @makhoa = (select makhoa from giaovien where magv = @magv)
+
+	if exists (select mamh = @mamh from monhoc where makhoa = @makhoa)
+		begin
+			raiserror('Mon hoc khong thuoc khoa cua GV phu trach', 16, 1);
+			rollback;
+		end
+end;
+
+-- NMCNPM thuoc KHOA CNPM, GV06 thuoc KHOA CTMT
+insert into GIANGDAY(MALOP, MAMH, MAGV, HOCKY, NAM, TUNGAY, DENNGAY)
+values
+('K12', 'NMCNPM', 'GV06', 2, 2006, '2/1/2006', '12/5/2006');
