@@ -86,6 +86,7 @@ CREATE TABLE CT_HOADON(
 	FOREIGN KEY (MaNGK) REFERENCES NGK (MaNGK),
 	FOREIGN KEY (SoHD) REFERENCES HOADON (SoHD)
 );
+
 CREATE TABLE PHIEUHEN(
 	SoPH varchar(8) ,
 	NgayLapPH date ,
@@ -117,188 +118,138 @@ SET DATEFORMAT dmy;
 
 -- NHACC
 INSERT INTO NHACC(MaNCC,TenNCC,DiaChiNCC,DTNCC)
-VALUES('NC1','Công ty NGK quốc tế Coca Cola','Xa lộ HN, Thủ Đức, TpHCM','088967908');
-INSERT INTO NHACC(MaNCC,TenNCC,DiaChiNCC,DTNCC)
-VALUES('NC2','Công ty NGK quốc tế Pepsi','Bến Chương Dương, Q.1, TpHCM','083663366');
-INSERT INTO NHACC(MaNCC,TenNCC,DiaChiNCC,DTNCC) 
-VALUES('NC3','Công ty NGK Bến Chương Dương','Hàm Tử, Q.5, TpHCM','089456677');
+VALUES
+('NC1','Công ty NGK quốc tế Coca Cola','Xa lộ HN, Thủ Đức, TpHCM','088967908'),
+('NC2','Công ty NGK quốc tế Pepsi','Bến Chương Dương, Q.1, TpHCM','083663366'),
+('NC3','Công ty NGK Bến Chương Dương','Hàm Tử, Q.5, TpHCM','089456677');
 
 -- LOAI NGK
 INSERT INTO LoaiNGK(MaLoaiNGK,TenLoaiNGK,MaNCC)
-VALUES('NK1','Nước uống co gas','NC1');
-INSERT INTO LoaiNGK(MaLoaiNGK,TenLoaiNGK,MaNCC)
-VALUES('NK2','Nước uống khong gas','NC2');
-INSERT INTO LoaiNGK(MaLoaiNGK,TenLoaiNGK,MaNCC)
-VALUES('NK3','Trà','NC1');
-INSERT INTO LoaiNGK(MaLoaiNGK,TenLoaiNGK,MaNCC)
-VALUES('NK4','Sữa','NC2');
+VALUES
+('NK1','Nước uống co gas','NC1'),
+('NK2','Nước uống khong gas','NC2'),
+('NK3','Trà','NC1'),
+('NK4','Sữa','NC2');
 
 -- NGK
 INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('CC1','Coca Cola','chai','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('CC2','Coca Cola','lon','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('PS1','Pepsi','chai','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('PS2','Pepsi','lon','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('SV1','Seven Up','chai','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('SV2','Seven Up','lon','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('NO1','Number One','chai','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('NO2','Number One','lon','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('ST1','Sting','chai','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('ST2','Sting','lon','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('C2','Trà C2','chai','NK2');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('OD','Trà xanh 0 độ','chai','NK2');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('ML1','Sữa tươi tiệt trùng','bịch','NK1');
-INSERT INTO NGK(MaNGK,TenNGK,Quycach,MaLoaiNGK)
-VALUES('WT1','Nước uống đóng chai','chai','NK2');
-
---CT_DDH
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH01', 'CC1', 20);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH01', 'CC2', 15);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH01', 'PS1', 18);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH01', 'SV2', 12);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH02', 'CC2', 30);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH02', 'PS1', 10);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH02', 'SV1', 5);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH02', 'ST1', 15);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH02', 'C2', 10);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH03', 'OD', 45);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH04', 'CC1', 8);
-INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
-VALUES ('DDH04', 'ST2', 12);
+VALUES
+('CC1','Coca Cola','chai','NK1'),
+('CC2','Coca Cola','lon','NK1'),
+('PS1','Pepsi','chai','NK1'),
+('PS2','Pepsi','lon','NK1'),
+('SV1','Seven Up','chai','NK1'),
+('SV2','Seven Up','lon','NK1'),
+('NO1','Number One','chai','NK1'),
+('NO2','Number One','lon','NK1'),
+('ST1','Sting','chai','NK1'),
+('ST2','Sting','lon','NK1'),
+('C2','Trà C2','chai','NK2'),
+('OD','Trà xanh 0 độ','chai','NK2'),
+('ML1','Sữa tươi tiệt trùng','bịch','NK1'),
+('WT1','Nước uống đóng chai','chai','NK2');
 
 -- KH
 INSERT INTO KH(MaKH,TenKH,DCKH,DTKH)
-VALUES('KH01','Cửa hàng BT','144 XVNT','088405996');
-INSERT INTO KH(MaKH,TenKH,DCKH,DTKH)
-VALUES('KH02','Cửa hàng Tra','198/42 NNT','085974572');
-INSERT INTO KH(MaKH,TenKH,DCKH,DTKH)
-VALUES('KH03','Sieu Thi Coop','24 DTH','086547888');
+VALUES
+('KH01','Cửa hàng BT','144 XVNT','088405996'),
+('KH02','Cửa hàng Tra','198/42 NNT','085974572'),
+('KH03','Sieu Thi Coop','24 DTH','086547888');
 
 --DDH
 INSERT INTO DDH(SODDH,NgayDH,MaNCC)
-VALUES('DDH01','10-05-2011','NC1');
-INSERT INTO DDH(SODDH,NgayDH,MaNCC)
-VALUES('DDH02','20-05-2011','NC1');
-INSERT INTO DDH(SODDH,NgayDH,MaNCC)
-VALUES('DDH03','26-05-2011','NC2');
-INSERT INTO DDH(SODDH,NgayDH,MaNCC)
-VALUES('DDH04','3-06-2011','NC2');
+VALUES
+('DDH01','10-05-2011','NC1'),
+('DDH02','20-05-2011','NC1'),
+('DDH03','26-05-2011','NC2'),
+('DDH04','3-06-2011','NC2');
+
+--CT_DDH
+INSERT INTO CT_DDH(SODDH, MaNGK,SLDat)
+VALUES 
+('DDH01', 'CC1', 20),
+('DDH01', 'CC2', 15),
+('DDH01', 'PS1', 18),
+('DDH01', 'SV2', 12),
+('DDH02', 'CC2', 30),
+('DDH02', 'PS1', 10),
+('DDH02', 'SV1', 5),
+('DDH02', 'ST1', 15),
+('DDH02', 'C2', 10),
+('DDH03', 'OD', 45),
+('DDH04', 'CC1', 8),
+('DDH04', 'ST2', 12);
 
 --PHIEUGH
 INSERT INTO PHIEUGH(SoPGH,NgayGH,SODDH)
-VALUES('PGH01','12-5-2010','DDH01');
-INSERT INTO PHIEUGH(SoPGH,NgayGH,SODDH)
-VALUES('PGH02','15-5-2010','DDH01');
-INSERT INTO PHIEUGH(SoPGH,NgayGH,SODDH)
-VALUES('PGH03','21-5-2010','DDH02');
-INSERT INTO PHIEUGH(SoPGH,NgayGH,SODDH)
-VALUES('PGH04','22-5-2010','DDH02');
-INSERT INTO PHIEUGH(SoPGH,NgayGH,SODDH)
-VALUES('PGH05','28-5-2010','DDH03');
+VALUES
+('PGH01','12-5-2010','DDH01'),
+('PGH02','15-5-2010','DDH01'),
+('PGH03','21-5-2010','DDH02'),
+('PGH04','22-5-2010','DDH02'),
+('PGH05','28-5-2010','DDH03');
 
 --CT_PGH
 INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH01', 'CC1', 15, 5000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH01', 'CC2', 15, 4000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH01', 'SV2', 10, 4000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH02', 'SV2', 2, 4000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH03', 'CC2', 30, 5000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH03', 'PS2', 10, 4000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH03', 'ST1', 15, 9000);
-INSERT INTO CT_PGH(SoPGH, MaNGK, SLGiao, DGGiao)
-VALUES ('PGH03', 'C2', 10, 8000);
+VALUES 
+('PGH01', 'CC1', 15, 5000),
+('PGH01', 'CC2', 15, 4000),
+('PGH01', 'SV2', 10, 4000),
+('PGH02', 'SV2', 2, 4000),
+('PGH03', 'CC2', 30, 5000),
+('PGH03', 'PS2', 10, 4000),
+('PGH03', 'ST1', 15, 9000),
+('PGH03', 'C2', 10, 8000);
 
 --HOADON
 INSERT INTO HOADON(SoHD, NgayLapHD, MaKH)
-VALUES ('HD01', '10-05-2010', 'KH01');
-INSERT INTO HOADON(SoHD, NgayLapHD, MaKH)
-VALUES ('HD02', '20-05-2010', 'KH01');
-INSERT INTO HOADON(SoHD, NgayLapHD, MaKH)
-VALUES ('HD03', '05-06-2010', 'KH02');
-INSERT INTO HOADON(SoHD, NgayLapHD, MaKH)
-VALUES ('HD04', '16-06-2010', 'KH02');
-INSERT INTO HOADON(SoHD, NgayLapHD, MaKH)
-VALUES ('HD05', '22-06-2011', 'KH02');
-INSERT INTO HOADON(SoHD, NgayLapHD, MaKH)
-VALUES ('HD06', '08-07-2010', 'KH03');
+VALUES
+('HD01', '10-05-2010', 'KH01'),
+('HD02', '20-05-2010', 'KH01'),
+('HD03', '05-06-2010', 'KH02'),
+('HD04', '16-06-2010', 'KH02'),
+('HD05', '22-06-2011', 'KH02'),
+('HD06', '08-07-2010', 'KH03');
 
 --CT_HOADON
 INSERT INTO CT_HOADON(SoHD,MaNGK,SLKHMua,DGBan)
-VALUES('HD01','CC1',20,6000);
-INSERT INTO CT_HOADON(SoHD,MaNGK,SLKHMua,DGBan)
-VALUES('HD01','CC2',50,5000);
-INSERT INTO CT_HOADON(SoHD,MaNGK,SLKHMua,DGBan)
-VALUES('HD02','ST1',40,10000);
-INSERT INTO CT_HOADON(SoHD,MaNGK,SLKHMua,DGBan)
-VALUES('HD03','SV2',60,5000);
-INSERT INTO CT_HOADON(SoHD,MaNGK,SLKHMua,DGBan)
-VALUES('HD04','PS2',25,5000);
+VALUES('HD01','CC1',20,6000),
+('HD01','CC2',50,5000),
+('HD02','ST1',40,10000),
+('HD03','SV2',60,5000),
+('HD04','PS2',25,5000),
+('HD05','CC1',100,6000),
+('HD05','SV1',12,8000),
+('HD05','C2',80,9000),
+('HD06','OD',55,1000),
+('HD06','ST2',50,11000);
 
 --PHIEUHEN
 INSERT INTO PHIEUHEN(SoPH, NgayLapPH, NgayHenGiao, MaKH)
-VALUES ('PH01', '08-05-2010', '09-06-2010', 'KH01');
-INSERT INTO PHIEUHEN(SoPH, NgayLapPH, NgayHenGiao, MaKH)
-VALUES ('PH02', '25-05-2010', '28-06-2010', 'KH02');
-INSERT INTO PHIEUHEN(SoPH, NgayLapPH, NgayHenGiao, MaKH)
-VALUES ('PH03', '01-06-2010', '02-06-2010', 'KH03');
+VALUES 
+('PH01', '08-05-2010', '09-06-2010', 'KH01'),
+('PH02', '25-05-2010', '28-06-2010', 'KH02'),
+('PH03', '01-06-2010', '02-06-2010', 'KH03');
 
 --CT_PH
 INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH01','ST2',10);
-INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH01','OD',8);
-INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH02','CC1',20);
-INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH03','ST1',7);
-INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH03','SV2',12);
-INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH03','CC2',9);
-INSERT INTO CT_PH(SoPH,MaNGK,SLHen)
-VALUES ('PH04','PS2',15);
+VALUES 
+('PH01','ST2',10),
+('PH01','OD',8),
+('PH02','CC1',20),
+('PH03','ST1',7),
+('PH03','SV2',12),
+('PH03','CC2',9);
 
 
 --PHIEU TRA NO
 INSERT INTO PHIEUTRANO(SoPTN, NgayTra, SoTienTra, SoHD)
-VALUES ('PTN01', '18-05-2010', '500000', 'HD01');
-INSERT INTO PHIEUTRANO(SoPTN, NgayTra, SoTienTra, SoHD)
-VALUES ('PTN02', '01-06-2010', '350000', 'HD01');
-INSERT INTO PHIEUTRANO(SoPTN, NgayTra, SoTienTra, SoHD)
-VALUES ('PTN03', '02-06-2010', '650000', 'HD02');
-INSERT INTO PHIEUTRANO(SoPTN, NgayTra, SoTienTra, SoHD)
-VALUES ('PTN04', '15-06-2010', '1020000', 'HD03');
-INSERT INTO PHIEUTRANO(SoPTN, NgayTra, SoTienTra, SoHD)
-VALUES ('PTN05', '01-07-2010', '1080000', 'HD03');
+VALUES 
+('PTN01', '18-05-2010', '500000', 'HD01'),
+('PTN02', '01-06-2010', '350000', 'HD01'),
+('PTN03', '02-06-2010', '650000', 'HD02'),
+('PTN04', '15-06-2010', '1020000', 'HD03'),
+('PTN05', '01-07-2010', '1080000', 'HD03');
 
 --query
 -- 1. Liet ke cac NGK va cac loai NGK tuong ung
@@ -538,8 +489,11 @@ where DATEPART(year, HOADON.NgayLapHD) = 2010
 group by KH.MaKH, KH.TenKH, KH.DCKH, KH.DTKH;
 
 
+
 -- views
 -- 1. Tao view V_NGK tong hop du lieu ve tung NGK da duoc ban. Cau  truc View bao gom cac thuoc tinh: MaNGK, TenNGK, Quycach, SoLuongBan, TongTien = DonGiaBan * So luong
+use TH02
+go;
 
 create view V_NGK 
 as 
@@ -581,6 +535,9 @@ where NGK.MaNGK not in  (select MaNGK
 
 
 -- PROCEDUREs
+use TH02
+go;
+
 -- 1. Liet ke tat ca nuoc giai khat va loai ngk tuong ung
 create procedure sp_ngk
 as 
@@ -679,53 +636,55 @@ select * from CT_PGH;
 --chi tiết phiếu hẹn, thực hiện các yêu cầu sau:
 -- Xóa dòng trương ứng trong chi tiết phiếu hẹn
 --Nếu phiếu hẹn tương ứng không còn dòng chi tiết thì xóa luôn phiếu hẹn đó
-CREATE PROC sp_delete_CTPH @SOPH VARCHAR(8), @MANGK VARCHAR(8), @SLHen int
-AS
-BEGIN
-	DELETE FROM CT_PH
-	WHERE SoPH=@SOPH and MaNGK = @MANGK
+create proc sp_delete_CTPH @SOPH varchar(8), @MANGK varchar(8), @SLHen int
+as
+begin
+	delete from CT_PH
+	where SoPH=@SOPH and MaNGK = @MANGK
 
 	if @SOPH not in(select @SOPH from CT_PH where MaNGK = @MANGK)
 	begin
 		delete  from PHIEUHEN where SoPH = @SOPH
 	end
 
-END
+end
 
 select * from sp_delete_CTPH;
 
 --FUNCTION
-
+use TH02
+go;
 --1. Tạo hàm f_list có 2 tham số là @Ngay1 và @Ngay2 cho biết danh sách các NGK đã được bán trong 
 --khoảng thời gian trên. Danh sách gồm các thuộc tính: MaNGK, TenNGK, DVT, SoLuong.
-CREATE FUNCTION f_list (@Ngay1 DATE, @Ngay2 DATE)
-returns TABLE 
-RETURN
-SELECT  NGK.MaNGK, NGK.TenNGK,CT_HOADON.SLKHMua FROM NGK 
-JOIN CT_HOADON ON CT_HOADON.MaNGK=NGK.MaNGK
-JOIN HOADON ON CT_HOADON.SoHD=HOADON.SoHD
-WHERE HOADON.NgayLapHD BETWEEN @Ngay1 AND @Ngay2;
+create function f_list (@Ngay1 date, @Ngay2 date)
+returns table 
+return
+select  NGK.MaNGK, NGK.TenNGK,CT_HOADON.SLKHMua 
+from NGK inner join CT_HOADON on CT_HOADON.MaNGK=NGK.MaNGK
+		inner join HOADON on CT_HOADON.SoHD=HOADON.SoHD
+where HOADON.NgayLapHD between @Ngay1 and @Ngay2;
 
 select * from f_list('20-1-2010','20-1-2012');
 
 --2. Tạo hàm f_max cho biết ĐĐH đã đặt NGK với số lượng nhiều nhất so với các ĐĐH khác có đặt NGK 
 --đó. Thông tin hiển thị: SoDDH, MaNGK, [SL đặt nhiều nhất].
-CREATE FUNCTION  f_max()
-RETURNS TABLE 
-AS
-RETURN 
-	SELECT SODDH,MaNGK,SLDat FROM CT_DDH AS CT1
-	WHERE SLDat>= ALL(SELECT MAX(SLDAT) FROM CT_DDH AS CT2
-					WHERE CT1.MaNGK = CT2.MaNGK);
-
-SELECT * FROM f_max();
-SELECT * FROM CT_DDH;
+create function f_max()
+returns table 
+as
+return
+	select SODDH,MaNGK,SLDat from CT_DDH as CT1
+	where SLDat>= ALL(select MAX(SLDAT) from CT_DDH as CT2
+					where CT1.MaNGK = CT2.MaNGK);
+select * from f_max();
+select * from CT_DDH;
 
 --3. Tạo hàm f_kh hiển thị thông tin của khách hàng có giao dịch với cửa hàng nhiều nhất (căn cứ
 --vào số lần mua hàng).
-CREATE FUNCTION  f_kh()
-RETURNS TABLE AS
-RETURN SELECT KH.* FROM KH
+create function f_kh()
+returns table 
+as
+return
+ SELECT KH.* FROM KH
 		WHERE KH.MaKH = (SELECT HOADON.MaKH FROM HOADON
 						GROUP BY HOADON.MaKH
 						HAVING COUNT(HOADON.SoHD)>=ALL(SELECT COUNT(*)
@@ -762,22 +721,28 @@ SELECT * FROM V_khachang
 
 
 --Trigger
+use TH02
+go;
+
 --1. Tạo trigger PH _insert trên bảng PHIEUHEN kiểm tra ràng buộc toàn vẹn sau đây mỗi khi thêm một 
 --dòng vào bảng PHIEUHEN:
 -- MaKH phải tồn tại tron bảng KH
 -- Ngày hẹn giao không thể trước ngày lập phiếu hẹn.
-CREATE TRIGGER PH_insert ON PHIEUHEN FOR INSERT
-AS
-BEGIN
-	IF( NOT EXISTS(SELECT MAKH FROM KH ) OR EXISTS (SELECT * FROM PHIEUHEN
-										WHERE NgayHenGiao > NgayLapPH))
-	BEGIN
-	ROLLBACK TRANSACTION
-	PRINT'VALUE IS INVALID'
-	END
-	ELSE 
-	PRINT 'SUCCESSFULLY INSERT VALUES '
-END
+
+
+create trigger PH_insert on PHIEUHEN for insert
+as
+begin
+	if( not exists(select MAKH from KH ) or exists(select * from PHIEUHEN
+										where NgayHenGiao > NgayLapPH))
+		begin
+	-- THUC HIEN ROLL BACK
+		rollback transaction
+		print'VALUE IS INVALID'
+	end
+		else
+		print 'SUCCESSFULLY INSERT VALUES '
+end
 
 INSERT INTO PHIEUHEN(SoPH, NgayLapPH, NgayHenGiao, MaKH)
 VALUES ('PH06', '01-06-2012', '02-06-2013', 'KH04');
@@ -786,39 +751,38 @@ DROP TRIGGER PH_insert
 
 --2. Tạo trigger CTPH_insert trên bảng CT_PH kiểm tra ràng buộc toàn vẹn sau đây mỗi khi thêm một 
 --dòng vào bảng CT_PH:”Tổng số lượng hẹn cho mỗi MaNGK không vượt quá 20”
-CREATE TRIGGER CTPH_insert ON CT_PH FOR INSERT
-AS 
-BEGIN	
+create trigger CTPH_insert on CT_PH for insert
+as 
+begin	
 	-- NEU TON TAI MANGK CO SLHEN VUOT QUA 20
-	IF EXISTS(SELECT MaNGK FROM CT_PH
+	IF EXISTS(select MaNGK from CT_PH
 				GROUP BY MaNGK
 				HAVING SUM(SLHen)>20)
-	BEGIN
+	begin
 	-- THUC HIEN ROLL BACK
-		ROLLBACK TRANSACTION
-		PRINT'VALUE IS INVALID'
-	END
-		ELSE 
-		PRINT 'SUCCESSFULLY INSERT VALUES '
-
-END
+		rollback transaction
+		print'VALUE IS INVALID'
+	end
+		else
+		print 'SUCCESSFULLY INSERT VALUES '
+end
 
 --3. Viết trigger PT_insert trên bảng PHIEUTRANO kiểm tra ràng buộc toàn vẹn sau đây mỗi khi thêm một 
 --dòng vào bảng PHIEUTRANO:“ Khách hàng chỉ được trả tối đa 3 lần cho mỗi hóa đơn”
-CREATE TRIGGER PT_insert ON PHIEUTRANO FOR INSERT
-AS
-BEGIN
-	IF EXISTS(SELECT * FROM PHIEUTRANO
-			  GROUP BY SoHD 
-			  HAVING COUNT(*)>3)
-	BEGIN
+create trigger PT_insert on PHIEUTRANO for insert
+as
+begin
+	if exists(select * from PHIEUTRANO
+			  group by SoHD 
+			  having count(*)>3)
+	begin
 	-- THUC HIEN ROLL BACK
-		ROLLBACK TRANSACTION
-		PRINT'VALUE IS INVALID'
-	END
-		ELSE 
-		PRINT 'SUCCESSFULLY INSERT VALUES '
-END
+		rollback transaction
+		print'VALUE IS INVALID'
+	end
+		else
+		print 'SUCCESSFULLY INSERT VALUES '
+end
 
 --4. Viết trigger HD_update trên bảng HOADON kiểm tra ràng buộc toàn vẹn sau đây mỗi khi cập nhật một 
 --dòng trên bảng HOADON:

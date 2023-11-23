@@ -88,9 +88,6 @@ KQUA varchar(255)
 
 drop table KETQUATHI;
 
---contraints
-alter table HOCVIEN add constraint MALOP foreign key (MALOP) references LOP(MALOP);
-
 --database
 SET DATEFORMAT dmy; 
 
@@ -292,6 +289,9 @@ values
 ('K1305', 'THDC', 1, '20/05/2006', 8.00, 'Dat'),
 ('K1305', 'CTRR', 1, '13/05/2006', 10.00, 'Dat');
 
+--contraints
+alter table HOCVIEN add constraint MALOP foreign key (MALOP) references LOP(MALOP);
+
 --Batchs
 --1. Sử dụng kiểu dữ liệu cursor, viết đoạn chương trình in danh sách giáo viên của từng khoa như sau:
 ----------- DANH SACH GIAO VIEN KHOA: <TENKHOA> 
@@ -361,7 +361,6 @@ begin
 end
 
 print(dbo.f_dtb('k1102'));
-select dtb from dbo.f_dtb('k1102');
 drop function f_dtb;
 
 --2. Tạo hàm F_XL có mã học viên là tham số, cho biết kết quả xếp loại của học viên như sau: 
