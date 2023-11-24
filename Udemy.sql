@@ -161,45 +161,67 @@ VALUES
 ('AI01', 'Bài 1: Làm quen với Adobe Illustrator 2020', 'Giới thiệu Adobe Illustrator 2020', 'https://youtu.be/aQMopS2idcc?si=pOAj3OObgPai347T', 1,'AI'),
 ('AI02', 'Bài 2: Tạo, Mở và Lưu File Trên Adobe Illustrator', 'Tạo, Mở và Lưu File trên AI','https://youtu.be/YvzRFvn76dA?si=RQ9h-fdISY_3qafw',2,'AI'),
 ('AI03', 'Bài 3: Cách sử dụng Artboards trong Adobe Illustrator', 'Sử dụng Artboards', 'https://youtu.be/SFh7OvTT8ZM?si=v20-uA4JIELBv4KZ',3,'AI');
-
 --Digital Paiting
 INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
 VALUES
 ('DP01', 'Bài 1: Làm quen với công cụ', 'Giới thiệu Digital Paiting', 'https://youtu.be/i-EPhpzq5zU?si=04xkB3EJenOTWtzj', 1, 'DP'),
 ('DP02', 'Bai 2: Cách vẽ đôi môi trong PTS', 'Vẽ đôi môi', 'https://youtu.be/sfGfKsRs-f0?si=w_LCAXu4k0DI1y6i', 2, 'DP'),
 ('DP03', 'Bài 03: Cách vẽ mũi nhân vật', 'Vẽ mũi', 'https://youtu.be/HAjNWQGNGcU?si=0GAvMSZKj9s2Lsnq',3,'DP');
-
 --Figma
 INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
 VALUES
 ('F01', 'Bài 1: Giới thiệu giao diện người dùng Website và Desktop Thiết Kế UX/UI App với FIGMA', 'Giới thiệu Figma', 'https://youtu.be/fAAHMwa8Q1o?si=4JgZBFBujSjTBrHX',1,'Figma'),
 ('F02', 'Bài 2: Làm việc với Move, Scale, Frame và Slice Tool', 'Sử dụng các công cụ', 'https://youtu.be/KtdKvSa9Uc8?si=vS1896Y7WIsFGVPo', 2,'Figma'),
 ('F03', 'Bài 3: Draw Vector Shapes và Pen Tool', 'Sử dụng các công cụ', 'https://youtu.be/f-hXMC13udc?si=dzCCOcgsWvhrl6DX',3,'Figma');
-
 --Lightroom
 INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
 VALUES
 ('L01', 'Bài 1: Giới thiệu Lightroom', 'Giới thiệu Lightroom', 'https://youtu.be/rQ_7QJrbC0A?si=BYLD2Cnf-y6z9giE', 1, 'Lightroom'),
 ('L02', 'Bài 2: Cách mở file bằng LightRoom', 'Mở file', 'https://youtu.be/b6Hj5a0wLYI?si=OxuChBCwEc9RvzJy',2,'Lightroom'),
 ('L03', 'Bài 3: Nguyên lý cốt lõi của LightRoom', 'Nguyên lý cốt lõi', 'https://youtu.be/Kc2ueDsZ6Js?si=OxKqroLDVpScdN9M', 3, 'Lightroom');
-
 --Nhiếp ảnh 360
 INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
 VALUES
 ('NA01', 'Bài 1: Tại sao chúng ta cần mua máy ảnh?', 'Lý do mua máy ảnh', 'https://youtu.be/z1zWvtRucn0?si=Vh92edRrCgbJp3-5', 1, 'NA'),
 ('NA02', 'Bài 2: Tìm hiểu về Khẩu Độ', 'Khẩu độ', 'https://youtu.be/PwrA7yFo7eQ?si=b4b0oe7TSjnJS1KV', 2, 'NA'),
 ('NA03', 'Bài 3: Tìm hiểu về Tốc độ chụp', 'Tốc độ chụp', 'https://youtu.be/Tdz_4PZtqkE?si=aBMbapM0VeHK9DdA', 3,'NA');
-
 --Photoshop
 INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
 VALUES
 ('PTS01', 'Bài 1: Làm quen với phần mềm Photoshop 2021', 'Giới thiệu Photoshop', 'https://youtu.be/UsAKKpEFaK4?si=RVB4PRyrRLajSzxN', 1, 'PTS'),
 ('PTS02', 'Bài 2: Công cụ tạo vùng chọn và bài tập ghép hình ', 'Công cụ', 'https://youtu.be/uO6XFEDgYcg?si=1zm61MlT5Em5Oxp3', 2, 'PTS'),
 ('PTS03', 'Bài 3: Ghép hình với PEN', 'Pen tool', 'https://youtu.be/6jyLNaCOYzI?si=z_9rTUkMHp9JuJME', 3, 'PTS');
-
 --Adobe After Effect
 INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
 VALUES
 ('AE01', 'Bài 1: Tổng quan giới thiệu After Effects', 'Giới thiệu After Effects', 'https://youtu.be/Y6LAk4vGO2E?si=oxHXCuwm7Mjk8aPX', 1, 'AE'),
 ('AE02', 'Bài 2: Import data vào trong After Effects', 'Import data', 'https://youtu.be/wblHOBlif6Q?si=X18fmdCX5IRd47q7', 2, 'AE'),
 ('AE03', 'Bài 3: Chức năng các công cụ Tools trong AE', 'Công cụ', 'https://youtu.be/362DIxXMYGU?si=whuyQmSpUqatjGwR',3,'AE');
+
+--ĐÁNH GIÁ
+INSERT INTO DANHGIA(MADG, DIEMDG, BINHLUAN, NGAYDG, MAHV, MAKH)
+VALUES
+('DG001', 4.5, 'Khoa hoc bo ich', '12/12/2020', 'K1305', 'KH001'),
+('DG002', 5.0, 'Rat huu ich', '15/12/2020', 'K1204', 'KH001'),
+('DG003', 1.5, 'Qua te', '10/10/2020', 'K1303', 'KH001'),
+('DG004', 2.5, 'Tam duoc', '11/12/2020', 'K1105', 'KH001'),
+('DG005', 3.5, 'Kha on', '12/11/2020', 'K1106', 'KH001'),
+('DG006', 1.0, 'That vong cuc ky', '13/10/2020', 'K1207', 'KH001'),
+('DG007', 2.0, 'te', '15/10/2020', 'K1208', 'KH001'),
+('DG008', 3.0, 'Kha bo ich', '15/11/2020', 'K1301', 'KH001'),
+('DG009', 4.0, 'Huu ich', '15/12/2020', 'K1109', 'KH001'),
+('DG0010', 5.0, 'Tuyet voi', '15/12/2020', 'K1203', 'KH001');
+
+--THANH TOÁN
+INSERT INTO THANHTOAN (MATT, SOTIENTT, NGAYTT, TRANGTHAI, MAHV, MAKH)
+VALUES 
+('TT001', 700000, '4/11/2020', 'PAID', 'K1306', 'KH001'),
+('TT002', 300000, '4/11/2020', 'NOT PAID', 'K1206', 'KH001'),
+('TT003', 500000, '5/11/2020', 'NOT PAID', 'K1208', 'KH001'),
+('TT004', 1000000, '3/11/2020', 'PAID', 'K1305', 'KH001'),
+('TT005', 700000, '2/11/2020', 'PAID', 'K1204', 'KH001'),
+('TT006', 500000, '5/11/2020', 'PAID', 'K1105', 'KH001'),
+('TT007', 900000, '4/11/2020', 'NOT PAID', 'K1301', 'KH001'),
+('TT008', 700000, '3/11/2020', 'PAID', 'K1203', 'KH001'),
+('TT009', 500000, '2/11/2020', 'PAID', 'K1106', 'KH001'),
+('TT0010', 300000, '4/11/2020', 'NOT PAID', 'K1109', 'KH001');
