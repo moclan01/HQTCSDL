@@ -57,6 +57,7 @@ CREATE TABLE BAIHOC (
 	THUTUBH INT NOT NULL,
 	MAKH VARCHAR(10) NOT NULL
 );
+
 --linh
 -- Đăng ký học: Mã đăng ký học, ngày đăng ký, mã học viên, mã khoá học
 CREATE TABLE DANGKYHOC (
@@ -82,7 +83,7 @@ CREATE TABLE THANHTOAN (
 	MATT VARCHAR(10) PRIMARY KEY NOT NULL,
 	SoTienTT FLOAT NOT NULL,
 	NGAYTT DATE NOT NULL,
-	TRANGTHAI TINYINT NOT NULL,
+	TRANGTHAI VARCHAR(20) NOT NULL,
 	MAHV VARCHAR(10) NOT NULL,
 	MAKH VARCHAR(10) NOT NULL
 );
@@ -152,5 +153,53 @@ VALUES
 
 --KHÓA HỌC
 
+
 --BÀI HỌC
-INSERT INTO BAIHOC()
+--Adobe Illustrator
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('AI01', 'Bài 1: Làm quen với Adobe Illustrator 2020', 'Giới thiệu Adobe Illustrator 2020', 'https://youtu.be/aQMopS2idcc?si=pOAj3OObgPai347T', 1,'AI'),
+('AI02', 'Bài 2: Tạo, Mở và Lưu File Trên Adobe Illustrator', 'Tạo, Mở và Lưu File trên AI','https://youtu.be/YvzRFvn76dA?si=RQ9h-fdISY_3qafw',2,'AI'),
+('AI03', 'Bài 3: Cách sử dụng Artboards trong Adobe Illustrator', 'Sử dụng Artboards', 'https://youtu.be/SFh7OvTT8ZM?si=v20-uA4JIELBv4KZ',3,'AI');
+
+--Digital Paiting
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('DP01', 'Bài 1: Làm quen với công cụ', 'Giới thiệu Digital Paiting', 'https://youtu.be/i-EPhpzq5zU?si=04xkB3EJenOTWtzj', 1, 'DP'),
+('DP02', 'Bai 2: Cách vẽ đôi môi trong PTS', 'Vẽ đôi môi', 'https://youtu.be/sfGfKsRs-f0?si=w_LCAXu4k0DI1y6i', 2, 'DP'),
+('DP03', 'Bài 03: Cách vẽ mũi nhân vật', 'Vẽ mũi', 'https://youtu.be/HAjNWQGNGcU?si=0GAvMSZKj9s2Lsnq',3,'DP');
+
+--Figma
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('F01', 'Bài 1: Giới thiệu giao diện người dùng Website và Desktop Thiết Kế UX/UI App với FIGMA', 'Giới thiệu Figma', 'https://youtu.be/fAAHMwa8Q1o?si=4JgZBFBujSjTBrHX',1,'Figma'),
+('F02', 'Bài 2: Làm việc với Move, Scale, Frame và Slice Tool', 'Sử dụng các công cụ', 'https://youtu.be/KtdKvSa9Uc8?si=vS1896Y7WIsFGVPo', 2,'Figma'),
+('F03', 'Bài 3: Draw Vector Shapes và Pen Tool', 'Sử dụng các công cụ', 'https://youtu.be/f-hXMC13udc?si=dzCCOcgsWvhrl6DX',3,'Figma');
+
+--Lightroom
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('L01', 'Bài 1: Giới thiệu Lightroom', 'Giới thiệu Lightroom', 'https://youtu.be/rQ_7QJrbC0A?si=BYLD2Cnf-y6z9giE', 1, 'Lightroom'),
+('L02', 'Bài 2: Cách mở file bằng LightRoom', 'Mở file', 'https://youtu.be/b6Hj5a0wLYI?si=OxuChBCwEc9RvzJy',2,'Lightroom'),
+('L03', 'Bài 3: Nguyên lý cốt lõi của LightRoom', 'Nguyên lý cốt lõi', 'https://youtu.be/Kc2ueDsZ6Js?si=OxKqroLDVpScdN9M', 3, 'Lightroom');
+
+--Nhiếp ảnh 360
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('NA01', 'Bài 1: Tại sao chúng ta cần mua máy ảnh?', 'Lý do mua máy ảnh', 'https://youtu.be/z1zWvtRucn0?si=Vh92edRrCgbJp3-5', 1, 'NA'),
+('NA02', 'Bài 2: Tìm hiểu về Khẩu Độ', 'Khẩu độ', 'https://youtu.be/PwrA7yFo7eQ?si=b4b0oe7TSjnJS1KV', 2, 'NA'),
+('NA03', 'Bài 3: Tìm hiểu về Tốc độ chụp', 'Tốc độ chụp', 'https://youtu.be/Tdz_4PZtqkE?si=aBMbapM0VeHK9DdA', 3,'NA');
+
+--Photoshop
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('PTS01', 'Bài 1: Làm quen với phần mềm Photoshop 2021', 'Giới thiệu Photoshop', 'https://youtu.be/UsAKKpEFaK4?si=RVB4PRyrRLajSzxN', 1, 'PTS'),
+('PTS02', 'Bài 2: Công cụ tạo vùng chọn và bài tập ghép hình ', 'Công cụ', 'https://youtu.be/uO6XFEDgYcg?si=1zm61MlT5Em5Oxp3', 2, 'PTS'),
+('PTS03', 'Bài 3: Ghép hình với PEN', 'Pen tool', 'https://youtu.be/6jyLNaCOYzI?si=z_9rTUkMHp9JuJME', 3, 'PTS');
+
+--Adobe After Effect
+INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+VALUES
+('AE01', 'Bài 1: Tổng quan giới thiệu After Effects', 'Giới thiệu After Effects', 'https://youtu.be/Y6LAk4vGO2E?si=oxHXCuwm7Mjk8aPX', 1, 'AE'),
+('AE02', 'Bài 2: Import data vào trong After Effects', 'Import data', 'https://youtu.be/wblHOBlif6Q?si=X18fmdCX5IRd47q7', 2, 'AE'),
+('AE03', 'Bài 3: Chức năng các công cụ Tools trong AE', 'Công cụ', 'https://youtu.be/362DIxXMYGU?si=whuyQmSpUqatjGwR',3,'AE');
