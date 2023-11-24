@@ -152,7 +152,53 @@ VALUES
 ('K1312', 'Nguyen Thi Kim', 'Yen', '07/09/1986', 'Nu', '123456789', 'TP.HCM');
 
 --KHÓA HỌC
+INSERT INTO KHOAHOC(MAKH, TENKH, MOTAKH, GIA_GOC, GIA_KM, NGAYTAO, MACD, MATL, MAGV)
+VALUES
+('AI', 'Học Adobe Illustrator từ cơ bản đến nâng cao', 'Illustrator là phần mềm thiết kế đồ họa chuyên vẽ. Sử dụng các thuật toán, các đối tượng hình học, text kết hợp. Việc kết hợp giữa các hình dạng cơ bản đó với nhau để tạo thành một đối tượng vector'
+, 700000, 1200000,'26/04/2022', 'CD03', 'MATL07','GV03'),
+('DP', 'Khóa học Digital Paiting cơ bản cho người mới bắt đầu', 'Digital Painting hay còn được gọi là vẽ kỹ thuật số. Đây là một kĩ thuật vẽ mà trong đó hoạ sĩ sẽ sử dụng công nghệ '
+, 500000, 1000000, '26/04/2022', 'CD01', 'MATL05','GV02'),
+('Figma', 'Nhập môn thiết kế UX/UI, UX-UI Design', 'UX/UI Designer là người đảm nhận vai trò thiết kế trải nghiệm người dùng (User Experience Design) và thiết kế giao diện người dùng (User Interface Design)'
+, 600000, 1000000, '26/04/2022', 'CD01', 'MATL07','GV01'),
+('Lightroom', 'Khóa học Lightroom - Blend màu và Retouch - Histogram là gì?', 'Lightroom là phần mềm xử lý ảnh cực kỳ mạnh mẽ và là người anh em với phần mềm Adobe Photoshop'
+, 300000, 600000, '26/04/2022', 'CD01', 'MATL08','GV05'),
+('NA', 'Nhiếp ảnh cơ bản cho người mới bắt đầu', 'Nhiếp ảnh là quá trình tạo ra hình ảnh bằng tác động của ánh sáng với phim hoặc thiết bị nhạy sáng'
+, 800000, 1600000, '26/04/2022', 'CD02', 'MATL08','GV04'),
+('PTS', 'Khóa học giúp bạn làm chủ Photoshop từ A - Z', 'Adobe Photoshop có thể được xem là phần mềm xử lý ảnh nổi tiếng nhất trên thị trường'
+, 1200000, 2000000, '26/04/2022', 'CD03', 'MATL07','GV06'),
+('AE', 'Học kỹ xảo trong sản xuất video bằng Adobe After Effects', 'Adobe After Effects là phần mềm đồ họa chuyển động số và đồ họa tổng hợp, được phát triển bởi hãng Adobe Systems.'
+, 1000000, 1500000, '26/04/2022', 'CD03', 'MATL05','GV07');
 
+
+-- THỂ LOẠI
+INSERT INTO THELOAI(MATL, TENTL)
+VALUES
+('MATL01','Kĩ năng ngoại ngữ'),
+('MATL02','Phát triển cá nhân'),
+('MATL03','Sales, bán hàng'),
+('MATL04','Phong cách sống'),
+('MATL05','Thiết kế đồ họa'),
+('MATL06','Tin học văn phòng'),
+('MATL07','Công nghệ thông tin'),
+('MATL08','Nhiếp ảnh, quay phim'),
+('MATL09','Marketing'),
+('MATL10','Kinh doanh khởi nghiệp'),
+('MATL11','Sức khỏe - Giới tính'),
+('MATL12','Gia đình');
+
+-- GIÁO VIÊN
+INSERT INTO GIAOVIEN(MAGV,TENGV,MOTAGV,DTGV) 
+VALUES
+('GV01','Huỳnh Ngọc Thanh','Chuyên viên digital marketing','09241378928'),
+('GV02','Nguyễn Mai Phương','Chuyên viên thiết kế','09012675341'),
+('GV03','Nguyễn Quang Duy','Chuyên viên thiết kế','09723982386'),
+('GV04','Tô Phương Linh','Chuyên viên dựng phim','07925436712'),
+('GV05','Nguyên Bính','Chuyên viên lập trình','09092534678'),
+('GV06','Trần Thắng Lợi','Chuyên viên lập trình','09252534678'),
+('GV07','Nguyễn Việt Toàn','Chuyên viên lập trình','09785534678'),
+('GV08','Nguyễn Tấn Khoa','life skills','07342378928'),
+('GV09','Nguyễn Phương Nhã','life skills','09563278928'),
+('GV10','Phạm Lê Đạt','Chuyên viên kinh tế','09689278989');
 
 --BÀI HỌC
 --Adobe Illustrator
