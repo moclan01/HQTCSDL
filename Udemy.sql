@@ -169,6 +169,17 @@ VALUES
 ('AE', 'Học kỹ xảo trong sản xuất video bằng Adobe After Effects', 'Adobe After Effects là phần mềm đồ họa chuyển động số và đồ họa tổng hợp, được phát triển bởi hãng Adobe Systems.'
 , 1000000, 1500000, '26/04/2022', 'CD03', 'MATL05','GV07');
 
+-- CẤP ĐỘ
+INSERT INTO CAPDO(MACD, TENCD)
+VALUES
+('CD01', 'Co ban'),
+('CD02', 'Trung binh'),
+('CD03', 'Nang cao'),
+('CD04', 'Chuyen sau'),
+('CD05', 'Co ban dac biet'),
+('CD06', 'Nang cao dac biet'),
+('CD07', 'Mo rong'),
+('CD08', 'Trinh do cao');
 
 -- THỂ LOẠI
 INSERT INTO THELOAI(MATL, TENTL)
@@ -243,6 +254,30 @@ VALUES
 ('AE01', 'Bài 1: Tổng quan giới thiệu After Effects', 'Giới thiệu After Effects', 'https://youtu.be/Y6LAk4vGO2E?si=oxHXCuwm7Mjk8aPX', 1, 'AE'),
 ('AE02', 'Bài 2: Import data vào trong After Effects', 'Import data', 'https://youtu.be/wblHOBlif6Q?si=X18fmdCX5IRd47q7', 2, 'AE'),
 ('AE03', 'Bài 3: Chức năng các công cụ Tools trong AE', 'Công cụ', 'https://youtu.be/362DIxXMYGU?si=whuyQmSpUqatjGwR',3,'AE');
+
+-- ĐĂNG KÝ HỌC
+INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
+VALUES
+('DK01', '24/9/2023', 'K1101', 'AI'),
+('DK02', '20/11/2023', 'K1101', 'AI'),
+('DK03', '15/12/2022', 'K1102', 'DP'),
+('DK04', '10/10/2022', 'K1103', 'Figma'),
+('DK05', '5/12/2021', 'K1103', 'Figma'),
+('DK06', '2/11/2023', 'K1303', 'Figma'),
+('DK07', '12/11/2022', 'K1304', 'Lightroom'),
+('DK08', '24/04/2023', 'K1201', 'PTS'),
+('DK09', '15/07/2022', 'K1106', 'AE'),
+('DK10', '18/12/2022', 'K1310', 'AE'),
+('DK11', '20/9/2023', 'K1311', 'AI'),
+('DK12', '11/11/2023', 'K1211', 'AI'),
+('DK13', '8/12/2022', 'K1204', 'DP'),
+('DK14', '3/07/2022', 'K1209', 'NA'),
+('DK15', '5/1/2021', 'K1203', 'NA'),
+('DK16', '2/1/2023', 'K1203', 'PTS'),
+('DK17', '2/11/2022', 'K1302', 'Lightroom'),
+('DK18', '4/08/2023', 'K1301', 'PTS'),
+('DK19', '11/08/2022', 'K1306', 'Ligtroom'),
+('DK20', '17/07/2022', 'K1301', 'DP');
 
 --ĐÁNH GIÁ
 INSERT INTO DANHGIA(MADG, DIEMDG, BINHLUAN, NGAYDG, MAHV, MAKH)
