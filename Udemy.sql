@@ -1,6 +1,8 @@
 ﻿use Udemy;
 
 -- Học viên: Mã học viên, tên học viên, địa chỉ học viên, sđt học viên
+--table
+--bính
 CREATE TABLE HOCVIEN(
 	MAHV VARCHAR(10) PRIMARY KEY NOT NULL,
 	HO NVARCHAR(255) NOT NULL,
@@ -12,6 +14,7 @@ CREATE TABLE HOCVIEN(
 );
 DROP TABLE HOCVIEN;
 
+--toàn
 -- Khoá học: Mã khoá học, tên khoá học, mô tả khoá học, giá gốc, giá khuyến mãi, ngày tạo, mã cấp độ, mã thể loại, mã giáo viên
 CREATE TABLE KHOAHOC (
 	MAKH VARCHAR(10) PRIMARY KEY NOT NULL,
@@ -24,19 +27,19 @@ CREATE TABLE KHOAHOC (
 	MATL CHAR NOT NULL,
 	MAGV CHAR NOT NULL
 );
-
+--linh
 -- Cấp độ: mã cấp độ, tên cấp độ
 CREATE TABLE CAPDO (
 	MACD VARCHAR(10) PRIMARY KEY NOT NULL,
 	TENCD NVARCHAR(255) NOT NULL
 );
-
+--tâm
 -- Thể loại: Mã thể loại, tên thể loại
 CREATE TABLE THELOAI (
 	MATL VARCHAR(10) PRIMARY KEY NOT NULL,
 	TENTL NVARCHAR(255) NOT NULL
 );
-
+--tâm
 -- Giáo viên: Mã giáo viên, tên giáo viên, mô tả giáo viên, điện thoại giáo viên
 CREATE TABLE GIAOVIEN (
 	MAGV VARCHAR(10) PRIMARY KEY NOT NULL,
@@ -44,7 +47,7 @@ CREATE TABLE GIAOVIEN (
 	MOTAGV TEXT,
 	DTGV CHAR(11)
 );
-
+--bính
 -- Bài học: Mã bài học, tiêu đề bài học, nội dung bài học, video bài học, thứ tự bài học, mã khoá học
 CREATE TABLE BAIHOC (
 	MABH VARCHAR(10) PRIMARY KEY NOT NULL,
@@ -54,7 +57,7 @@ CREATE TABLE BAIHOC (
 	THUTUBH INT NOT NULL,
 	MAKH CHAR NOT NULL
 );
-
+--linh
 -- Đăng ký học: Mã đăng ký học, ngày đăng ký, mã học viên, mã khoá học
 CREATE TABLE DANGKYHOC (
 	MADKH VARCHAR(10) PRIMARY KEY NOT NULL,
@@ -62,7 +65,7 @@ CREATE TABLE DANGKYHOC (
 	MAHV CHAR NOT NULL,
 	MAKH CHAR NOT NULL
 );
-
+--ngân
 -- Đánh giá: Mã đánh giá, điểm đánh giá, bình luận, ngày đánh giá, mã học viên, mã khoá học
 CREATE TABLE DANHGIA (
 	MADG VARCHAR(10) PRIMARY KEY NOT NULL,
@@ -72,7 +75,7 @@ CREATE TABLE DANHGIA (
 	MAHV CHAR NOT NULL,
 	MAKH CHAR NOT NULL
 );
-
+--ngân
 -- Thanh toán: Mã thanh toán, số tiền thanh toán, ngày thanh toán, ...
 -- ... trạng thái thanh toán (đã thanh toán đủ hay chưa), Mã học viên, mã khoá học
 CREATE TABLE THANHTOAN (
