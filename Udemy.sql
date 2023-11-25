@@ -337,9 +337,42 @@ DROP PROC xoa_hocvien;
 
 --8.Thêm bài học mới: (bính) 
 --	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
+CREATE PROC themBaiHocMoi @mabh varchar(10), @makh varchar(10)
+AS
 
+GO;
+
+EXEC themBaiHocMoi;
 
 --FUNCTIONS
 --6.Lấy danh sách các học viên đã đánh giá một khoá học: (bính)
-CREATE FUNCTION dshv_danhgiakh
+CREATE FUNCTION dshv_danhgiakh(@makh varchar(10))
+RETURNS TABLE
+AS
+	RETURN(
+		SELECT KHOAHOC.MAKH, HOCVIEN.* 
+		FROM HOCVIEN INNER JOIN DANGKYHOC ON HOCVIEN.MAHV = DANGKYHOC.MAHV
+			INNER JOIN KHOAHOC ON DANGKYHOC.MAKH = KHOAHOC.MAKH
+		WHERE KHOAHOC.MAKH = @makh
+	)
+;
 
+SELECT * FROM dbo.dshv_danhgiakh('AI');
+
+--8.	Lấy thông tin bài học mới nhất trong một khoá học: (bính)
+CREATE FUNCTION f_baiHocMoiNhat(@makh varchar(10))
+RETURNS TABLE
+AS
+	RETURN(
+		SELECT *
+		FROM BAIHOC
+		WHERE BAIHOC.THUTUBH = (SELECT MAX(THUTUBH)
+									FROM BAIHOC
+									WHERE BAIHOC.MAKH = @makh
+									GROUP BY MAKH
+								)
+			AND BAIHOC.MAKH = @makh
+	)
+
+SELECT * FROM dbo.f_baiHocMoiNhat('AI');
+DROP FUNCTION f_baiHocMoiNhat;
