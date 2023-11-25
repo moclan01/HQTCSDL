@@ -12,7 +12,6 @@ CREATE TABLE HOCVIEN(
 	SDT VARCHAR(11),
 	DCHV NVARCHAR(255)
 );
-DROP TABLE HOCVIEN;
 
 --toàn
 -- Khoá học: Mã khoá học, tên khoá học, mô tả khoá học, giá gốc, giá khuyến mãi, ngày tạo, mã cấp độ, mã thể loại, mã giáo viên
@@ -276,7 +275,7 @@ VALUES
 ('DK16', '2/1/2023', 'K1203', 'PTS'),
 ('DK17', '2/11/2022', 'K1302', 'Lightroom'),
 ('DK18', '4/08/2023', 'K1301', 'PTS'),
-('DK19', '11/08/2022', 'K1306', 'Ligtroom'),
+('DK19', '11/08/2022', 'K1306', 'Lightroom'),
 ('DK20', '17/07/2022', 'K1301', 'DP');
 
 --ĐÁNH GIÁ
@@ -307,3 +306,40 @@ VALUES
 ('TT008', 700000, '3/11/2020', 'PAID', 'K1203', 'Figma'),
 ('TT009', 500000, '2/11/2020', 'PAID', 'K1106', 'Figma'),
 ('TT0010', 300000, '4/11/2020', 'NOT PAID', 'K1109', 'NA');
+
+--VIEWS
+--7.View tổng điểm đánh giá (thang điểm 10) và số lượng đánh giá cho mỗi khoá học: (bính)
+-- Tính tổng điểm và số lượng đánh giá từ bảng DANHGIA theo MAKH.
+CREATE VIEW tongdiem_soluongDanhgia
+AS
+	SELECT KHOAHOC.MAKH, AVG(DANHGIA.DIEMDG) AS TONGDIEMDG , COUNT(DANHGIA.MADG) AS SLDANHGIA
+	FROM DANHGIA INNER JOIN KHOAHOC ON DANHGIA.MAKH = KHOAHOC.MAKH
+	GROUP BY KHOAHOC.MAKH
+;
+
+SELECT * FROM tongdiem_soluongDanhgia;
+
+--PROCẺDURES
+--6.Xóa học viên: (bính)
+ --Xóa một học viên khỏi bảng HOCVIEN và tất cả các thông tin liên quan, 
+ --chẳng hạn như đăng ký học, thanh toán, và đánh giá.
+CREATE PROC xoa_hocvien @mahv varchar(10)
+AS
+	DELETE FROM HOCVIEN WHERE HOCVIEN.MAHV = @mahv;
+	DELETE FROM DANGKYHOC WHERE DANGKYHOC.MAHV = @mahv;
+	DELETE FROM THANHTOAN WHERE THANHTOAN.MAHV = @mahv;
+	DELETE FROM DANHGIA WHERE DANHGIA.MAHV = @mahv;
+GO;
+
+EXEC xoa_hocvien 'k1101';
+ 	
+DROP PROC xoa_hocvien;
+
+--8.Thêm bài học mới: (bính) 
+--	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
+
+
+--FUNCTIONS
+--6.Lấy danh sách các học viên đã đánh giá một khoá học: (bính)
+CREATE FUNCTION dshv_danhgiakh
+
