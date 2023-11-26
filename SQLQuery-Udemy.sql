@@ -3,6 +3,23 @@ SET DATEFORMAT dmy;
 
 -----------------------VIEWS-----------------------
 
+-- 1. View danh sách học viên: (linh)
+CREATE VIEW V_hocvien
+AS
+SELECT *
+FROM HOCVIEN
+
+SELECT * FROM V_hocvien
+
+-- 2. View chi tiết khoá học: (linh)
+CREATE VIEW V_khoahoc
+AS 
+SELECT KHOAHOC.TENKH, KHOAHOC.MOTAKH, KHOAHOC.GIA_GOC, KHOAHOC.GIA_KM, CAPDO.TENCD, THELOAI.TENTL, GIAOVIEN.TENGV
+FROM KHOAHOC, CAPDO, THELOAI, GIAOVIEN
+WHERE KHOAHOC.MACD = CAPDO.MACD and KHOAHOC.MATL = THELOAI.MATL and KHOAHOC.MAGV = GIAOVIEN.MAGV
+
+SELECT * FROM V_khoahoc
+
 --3.View danh sách bài học trong một khoá học: (Ngân)
 --Kết hợp thông tin từ bảng BAIHOC và KHOAHOC.
 create view v_dsbh
@@ -53,14 +70,65 @@ AS
 
 SELECT * FROM tongdiem_soluongDanhgia;
 -- câu 8 view •	Hiển thị thông tin từ bảng KHOAHOC với điều kiện NGAYTAO <= ngày hiện tại.(Toàn)
-	CREATE VIEW THONG_TIN_KHOA_HOC AS
-	SELECT MAKH,TENKH,MOTAKH,GIA_GOC,GIA_KM,NGAYTAO,MACD,MATL,MAGV	
-	FROM
-    KHOAHOC
-	WHERE
-    NGAYTAO <= CURRENT_DATE + 1;
+CREATE VIEW THONG_TIN_KHOA_HOC AS
+SELECT MAKH,TENKH,MOTAKH,GIA_GOC,GIA_KM,NGAYTAO,MACD,MATL,MAGV	
+FROM
+KHOAHOC
+WHERE
+NGAYTAO <= CURRENT_DATE + 1;
+
+-- Câu tự thêm :  cung cấp danh sách các khóa học cùng với mô tả, giáo viên được chỉ định và cấp độ tương ứng.(Toàn)
+CREATE VIEW COURSE_TEACHER_VIEW AS
+SELECT KH.MAKH, KH.TENKH, KH.MOTAKH,
+		GV.TENGV AS GIAOVIEN_TEN, CD.TENCD AS CAPDO_TEN
+FROM KHOAHOC KH
+JOIN GIAOVIEN GV ON KH.MAGV = GV.MAGV
+JOIN CAPDO CD ON KH.MACD = CD.MACD;
 
 -----------------------PROCẺDURES-----------------------
+
+-- 1. Thêm học viên mới: (linh)
+CREATE PROCEDURE p_themhocvien
+@mahv varchar(10), @ho nvarchar(255), @ten nvarchar(255), @ngaysinh date, @gioitinh varchar(3), @sdt varchar(11), @dchv nvarchar(255)
+AS
+BEGIN
+ IF EXISTS (SELECT MAHV FROM HOCVIEN WHERE MAHV = @mahv)
+	BEGIN
+	RAISERROr ('Ma hoc vien da ton tai' , 16, 1)
+	 END
+	 ELSE
+	 BEGIN
+		INSERT HOCVIEN(MAHV, HO, TEN, NGAYSINH, GIOITINH , SDT, DCHV)
+		VALUES (@mahv, @ho, @ten, @ngaysinh, @gioitinh, @sdt, @dchv)
+	END
+END
+
+EXECUTE p_themhocvien @mahv = 'K1313', @ho = 'Tran', @ten = 'Linh', @ngaysinh = '24/04/2003', @gioitinh = 'nu', @sdt = '123456789', @dchv = 'TP.HCM'
+
+SELECT * FROM HOCVIEN
+
+-- 2. Cập nhật thông tin học viên: (linh)
+CREATE PROCEDURE p_capnhat_tthv
+@mahv varchar(10), @ho nvarchar(255), @ten nvarchar(255), @ngaysinh date, @gioitinh varchar(3), @sdt varchar(11), @dchv nvarchar(255)
+AS
+BEGIN
+	IF EXISTS (SELECT MAHV FROM HOCVIEN WHERE MAHV = @mahv)
+	BEGIN
+		UPDATE HOCVIEN
+		SET HO = @ho, TEN = @ten, NGAYSINH = @ngaysinh, GIOITINH = @gioitinh, SDT = @sdt, DCHV = @dchv  
+		WHERE MAHV = @mahv
+	END
+	ELSE 
+	BEGIN 
+		 RAISERROR('Khong tim thay ma hoc vien', 16, 1)
+	END
+END
+
+
+EXECUTE p_capnhat_tthv @mahv = 'K1314', @ho = 'Tran', @ten = 'C', @ngaysinh = '24/04/2003', @gioitinh = 'nu', @sdt = '123456789', @dchv = 'TP.HCM'
+
+SELECT * FROM HOCVIEN;
+
 --3.Xóa đánh giá: (Ngân)
 --Xóa một bản ghi đánh giá từ bảng DANHGIA dựa trên MADG.
 
@@ -109,18 +177,7 @@ EXEC xoa_hocvien 'k1101';
 SELECT * FROM HOCVIEN;
 
 -- câu 7 Stored Procedures: • Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
-	CREATE PROCEDURE Tiem_kiem (
-    IN searchKeyword NVARCHAR(255)
-)
-BEGIN
-    SELECT *
-    FROM HOCVIEN
-    WHERE
-        HO LIKE CONCAT('%', searchKeyword, '%')
-        OR TEN LIKE CONCAT('%', searchKeyword, '%')
-        OR DCHV LIKE CONCAT('%', searchKeyword, '%')
-        OR SDT LIKE CONCAT('%', searchKeyword, '%');
-END
+
 
 --8.Thêm bài học mới: (Bính) 
 --	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
@@ -155,7 +212,7 @@ SELECT * FROM BAIHOC WHERE MAKH='AI';
 
 CREATE PROCEDURE UpdateTeacher (
    
-IN teacherId VARCHAR(10),
+	IN teacherId VARCHAR(10),
     IN newTeacherName NVARCHAR(255),
     IN newTeacherDescription TEXT,
     IN newTeacherPhone VARCHAR(11)
@@ -172,6 +229,16 @@ BEGIN
 END;
 
 -----------------------FUNCTIONS-----------------------
+
+--1. Tính tổng số đánh giá cho một khoá học: (Linh)
+CREATE FUNCTION f_tongso()
+RETURNS TABLE
+RETURN 
+SELECT DANHGIA.MAKH, COUNT(DANHGIA.MADG) AS 'Tổng số đánh giá'
+FROM DANHGIA
+GROUP BY DANHGIA.MAKH
+
+SELECT * FROM f_tongso();
 
 --2.Kiểm tra học viên đã tham gia một khoá học chưa: (Ngân)
 create function f_kthvdk(@mahv varchar(10))
@@ -284,6 +351,13 @@ BEGIN
 END
 
 -----------------------TRIGGERS-----------------------
+-- 1. Trigger tự động xóa các đánh giá khi khoá học bị xóa: (linh)
+CREATE TRIGGER t_tudongxoa ON KHOAHOC AFTER DELETE
+AS 
+BEGIN 
+	DELETE FROM DANHGIA
+	WHERE MAKH IN (SELECT MAKH FROM DELETED)
+END;
 
 --2.Trigger kiểm tra số lượng bài học trước khi xóa khoá học: (Ngân)
 --Trước khi xóa một khoá học khỏi bảng KHOAHOC, 
@@ -308,8 +382,25 @@ begin
 			delete from DANHGIA where DANHGIA.MAKH = @makh
 			delete from DANGKYHOC where DANGKYHOC.MAKH = @makh
 		end;
-end
+end;
 
+--CÂU 3: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
+--nếu đã đăng ký rồi thì không cho đăng ký (Bính)
+CREATE TRIGGER dangky_khoahoc ON DANGKYHOC AFTER INSERT,UPDATE
+AS
+	BEGIN
+		DECLARE @makh varchar(10), @mahv varchar(10);
+		SET @makh = (SELECT MAKH FROM inserted);
+		SET @mahv = (SELECT MAHV FROM inserted);
+		IF((select count(madkh) from dangkyhoc where mahv = @mahv and MAKH = @makh) > 1)
+		BEGIN
+			RAISERROR('học viên này đã đăng ký khóa học này', 16,1);
+			ROLLBACK;
+		END
+END;
+
+INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
+VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
 
 --4. Trigger kiểm tra trạng thái học viên trước khi xóa học viên: (Bính)
 -- Trước khi xóa một học viên khỏi bảng HOCVIEN, kiểm tra xem học viên có đang tham gia khoá học nào không. 
@@ -331,24 +422,6 @@ end;
 
 delete from HOCVIEN where MAHV = 'K1312';
 delete from HOCVIEN where MAHV = 'K1103';
-
---CÂU TỰ TẠO: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
---nếu đã đăng ký rồi thì không cho đăng ký (Bính)
-CREATE TRIGGER dangky_khoahoc ON DANGKYHOC AFTER INSERT,UPDATE
-AS
-	BEGIN
-		DECLARE @makh varchar(10), @mahv varchar(10);
-		SET @makh = (SELECT MAKH FROM inserted);
-		SET @mahv = (SELECT MAHV FROM inserted);
-		IF((select count(madkh) from dangkyhoc where mahv = @mahv and MAKH = @makh) > 1)
-		BEGIN
-			RAISERROR('học viên này đã đăng ký khóa học này', 16,1);
-			ROLLBACK;
-		END
-END;
-
-INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
-VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
 
 -- câu 7 trigger: •Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
 CREATE TRIGGER BeforeInsertTeacher
@@ -386,18 +459,3 @@ select * from hocvien;
 delete hocvien where mahv = 'K1313';
 
 -- câu 10 trigger • Trước khi thêm đăng ký học mới, trigger này đảm bảo rằng ngày đăng ký không được lớn hơn ngày hiện tại.(Toàn)
-CREATE TRIGGER BeforeInsertDangKyHoc
-BEFORE INSERT ON DANGKYHOC
-FOR EACH ROW
-BEGIN
-   
-    DECLARE currentDate DATE;
-    SET currentDate = CURDATE();
-
-    IF NEW.NGAYDANGKY > currentDate THEN
-      
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Ngày đăng ký không được lớn hơn ngày hiện tại';
-    
-END IF;
-END 
