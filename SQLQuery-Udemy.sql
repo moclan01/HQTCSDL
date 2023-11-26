@@ -32,8 +32,7 @@ hocvien.ho,hocvien.ten,hocvien.ngaysinh,hocvien.gioitinh,hocvien.sdt,hocvien.dch
 KHOAHOC.TENKH,KHOAHOC.MOTAKH,KHOAHOC.GIA_GOC,KHOAHOC.GIA_KM,KHOAHOC.NGAYTAO,KHOAHOC.MACD,KHOAHOC.MATL,KHOAHOC.MAGV
 from (hocvien inner join DANGKYHOC on DANGKYHOC.MAHV = hocvien.mahv) inner join KHOAHOC on DANGKYHOC.MAKH = KHOAHOC.MAKH;
 
-select * from V_hocvien
-drop view V_hocvien
+select * from V_hocvien;
 
 --cau 6. View tổng thanh toán cho mỗi học viên:(Tâm)
 create view V_tongthanhtoan
@@ -53,12 +52,17 @@ AS
 ;
 
 SELECT * FROM tongdiem_soluongDanhgia;
+-- câu 8 view •	Hiển thị thông tin từ bảng KHOAHOC với điều kiện NGAYTAO <= ngày hiện tại.(Toàn)
+	CREATE VIEW THONG_TIN_KHOA_HOC AS
+	SELECT MAKH,TENKH,MOTAKH,GIA_GOC,GIA_KM,NGAYTAO,MACD,MATL,MAGV	
+	FROM
+    KHOAHOC
+	WHERE
+    NGAYTAO <= CURRENT_DATE + 1;
 
 -----------------------PROCẺDURES-----------------------
 --3.Xóa đánh giá: (Ngân)
 --Xóa một bản ghi đánh giá từ bảng DANHGIA dựa trên MADG.
-use Udemy
-go
 
 create procedure p_xdg @madg varchar(10)
 as
@@ -103,8 +107,20 @@ GO;
 
 EXEC xoa_hocvien 'k1101';
 SELECT * FROM HOCVIEN;
- 	
-DROP PROC xoa_hocvien;
+
+-- câu 7 Stored Procedures: • Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
+	CREATE PROCEDURE Tiem_kiem (
+    IN searchKeyword NVARCHAR(255)
+)
+BEGIN
+    SELECT *
+    FROM HOCVIEN
+    WHERE
+        HO LIKE CONCAT('%', searchKeyword, '%')
+        OR TEN LIKE CONCAT('%', searchKeyword, '%')
+        OR DCHV LIKE CONCAT('%', searchKeyword, '%')
+        OR SDT LIKE CONCAT('%', searchKeyword, '%');
+END
 
 --8.Thêm bài học mới: (Bính) 
 --	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
@@ -132,9 +148,28 @@ GO;
 EXEC themBaiHocMoi 'AI04', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',4,'AI';
 EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',5,'AI';
 EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',5,'AI';
-DROP PROC themBaiHocMoi;
 
 SELECT * FROM BAIHOC WHERE MAKH='AI';
+
+-- câu 9 Stored Procedures:• Cập nhật thông tin giáo viên trong bảng GIAOVIEN dựa trên MAGV.(Toàn)
+
+CREATE PROCEDURE UpdateTeacher (
+   
+IN teacherId VARCHAR(10),
+    IN newTeacherName NVARCHAR(255),
+    IN newTeacherDescription TEXT,
+    IN newTeacherPhone VARCHAR(11)
+)
+BEGIN
+    
+    UPDATE GIAOVIEN
+    SET
+        TENGV = newTeacherName,
+        MOTAGV = newTeacherDescription,
+        DTGV = newTeacherPhone
+    WHERE
+        MAGV = teacherId;
+END;
 
 -----------------------FUNCTIONS-----------------------
 
@@ -157,7 +192,6 @@ begin
 end;
 
 print(dbo.f_kthvdk('K1103'));
-drop function f_kthvdk;
 
 --3.Tính tổng số tiền thanh toán của một học viên: (Ngân)
 create function f_tttthv(@mahv varchar(10))
@@ -173,7 +207,6 @@ begin
 end
 
 print(dbo.f_tttthv('K1301'));
-drop function f_tthv;
 
 --cau 4 Lấy danh sách các khoá học mà một học viên đã đăng ký(Tâm)
 create function f_listKhoaHoc (@mahv varchar(10))
@@ -185,6 +218,7 @@ where hocvien.mahv = @mahv
 go
 
 select * from f_listKhoaHoc('K1101');
+
 --cau 5. Tính tổng số bài học trong một khoá học:(Tâm)
 create function f_tongBaiHoc (@makh varchar(10))
 returns numeric
@@ -229,7 +263,25 @@ AS
 	)
 
 SELECT * FROM dbo.f_baiHocMoiNhat('AI');
-DROP FUNCTION f_baiHocMoiNhat;
+
+-- câu 10 FUNCTION : Lấy tổng số tiền thanh toán cho một khoá học:(Toàn)
+CREATE FUNCTION total_Thanh_Toan (
+    courseId VARCHAR(10) )
+RETURNS FLOAT
+BEGIN
+    DECLARE totalPayment FLOAT;
+
+    SELECT SUM(SoTienTT)
+    INTO totalPayment
+    FROM THANHTOAN
+    WHERE MAKH = courseId;
+
+    IF totalPayment IS NULL THEN
+        SET totalPayment = 0;
+    END IF;
+
+    RETURN totalPayment;
+END
 
 -----------------------TRIGGERS-----------------------
 
@@ -280,8 +332,6 @@ end;
 delete from HOCVIEN where MAHV = 'K1312';
 delete from HOCVIEN where MAHV = 'K1103';
 
-DROP TRIGGER kt_trangthai_hocvien;
-
 --CÂU TỰ TẠO: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
 --nếu đã đăng ký rồi thì không cho đăng ký (Bính)
 CREATE TRIGGER dangky_khoahoc ON DANGKYHOC AFTER INSERT,UPDATE
@@ -297,10 +347,23 @@ AS
 		END
 END;
 
-DROP TRIGGER dangky_khoahoc;
-
 INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
 VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
+
+-- câu 7 trigger: •Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
+CREATE TRIGGER BeforeInsertTeacher
+BEFORE INSERT ON GIAOVIEN
+FOR EACH ROW
+BEGIN
+    DECLARE containsSpecialChar BOOLEAN;
+    SET containsSpecialChar = REGEXP_CONTAINS(NEW.TENGV, '[^a-zA-Z0-9 ]');
+
+    IF containsSpecialChar THEN
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Tên giáo viên không được chứa ký tự đặc biệt';
+    END IF;
+END 
 
 --cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
 CREATE or alter TRIGGER trg_checkForNumberPhone ON hocvien
@@ -322,4 +385,19 @@ VALUES
 select * from hocvien;
 delete hocvien where mahv = 'K1313';
 
-drop trigger trg_checkForNumberPhone;
+-- câu 10 trigger • Trước khi thêm đăng ký học mới, trigger này đảm bảo rằng ngày đăng ký không được lớn hơn ngày hiện tại.(Toàn)
+CREATE TRIGGER BeforeInsertDangKyHoc
+BEFORE INSERT ON DANGKYHOC
+FOR EACH ROW
+BEGIN
+   
+    DECLARE currentDate DATE;
+    SET currentDate = CURDATE();
+
+    IF NEW.NGAYDANGKY > currentDate THEN
+      
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ngày đăng ký không được lớn hơn ngày hiện tại';
+    
+END IF;
+END 
