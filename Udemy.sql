@@ -448,4 +448,108 @@ AS
 DROP TRIGGER kt_trangthai_hocvien;
 
 
+------------------------------------ LỢI --------------------------------------------------------
+---  View tong so hoc vien dang ky cho tung khoa hoc
+CREATE VIEW TongSoHocVienDangKy AS
+	SELECT KHOAHOC.MAKH, COUNT(KHOAHOC.MAKH) AS TongDangKy FROM DANGKYHOC
+	INNER JOIN KHOAHOC ON DANGKYHOC.MAKH = KHOAHOC.MAKH
+	GROUP BY KHOAHOC.MAKH
+GO
 
+ -- PROC Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.
+CREATE PROC TimKiemHocVien 
+	@Ten NVARCHAR(255), 
+	@DCHV NVARCHAR(255),
+	@SDT VARCHAR(11)
+AS
+BEGIN
+	SELECT * FROM HOCVIEN
+    WHERE
+        (@Ten IS NULL OR TEN LIKE '%' + @Ten + '%') AND
+        (@DCHV IS NULL OR DCHV LIKE '%' + @DCHV + '%') AND
+        (@SDT IS NULL OR SDT = @SDT)
+END
+GO
+
+-- PROC Lấy danh sách học viên đã đăng ký và thanh toán cho một khoá học
+CREATE FUNCTION DangKyVaThanhToan()
+RETURNS TABLE AS
+RETURN (
+		SELECT HOCVIEN.* FROM THANHTOAN
+		INNER JOIN DANGKYHOC ON THANHTOAN.MAHV = DANGKYHOC.MAHV AND THANHTOAN.MAKH = DANGKYHOC.MAKH
+		INNER JOIN HOCVIEN ON HOCVIEN.MAHV = THANHTOAN.MAHV AND HOCVIEN.MAHV = DANGKYHOC.MAHV
+		WHERE THANHTOAN.TRANGTHAI = 'PAID'
+	);
+GO
+
+-- Function tính tổng tiền thanh toán đối với khoá học tương ứng
+CREATE FUNCTION TongTienThanhToan (@MAKH VARCHAR(10))
+RETURNS INT AS
+BEGIN
+	DECLARE @tong INT
+	SELECT @tong = SUM(THANHTOAN.SoTienTT) FROM THANHTOAN
+	INNER JOIN KHOAHOC ON THANHTOAN.MAKH = KHOAHOC.MAKH
+	WHERE KHOAHOC.MAKH = @MAKH
+	GROUP BY THANHTOAN.MAKH
+	RETURN @tong
+END
+GO
+
+-- Trigger tên giáo viên không chứa ký tự đặc biệt
+CREATE TRIGGER Trg_KiemTraTenGiaoVien
+ON GIAOVIEN
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM inserted
+        WHERE PATINDEX('%[^a-zA-Z0-9 ]%', TENGV) > 0
+    )
+    BEGIN
+        RAISERROR (N'Tên giáo viên khôn chứa ký tự đặc biệt', 16, 1);
+        ROLLBACK;
+    END
+END
+GO
+
+-- Trigger kiểm tra trạng thái của học viên trước khi đánh giá
+CREATE TRIGGER Trg_TrangThaiTruocKhiDanhGia
+ON DANHGIA
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @MAHV VARCHAR(10);
+	DECLARE @MAKH VARCHAR(10);
+
+	SELECT @MAHV = MAHV, @MAKH = MAKH FROM inserted
+
+	IF NOT EXISTS (
+		SELECT 1 FROM DANGKYHOC WHERE MAHV = @MAHV AND MAKH = @MAKH
+	)
+	BEGIN
+		RAISERROR (N'Học viên chưa đăng ký học chưa được phép đánh giá', 12, 1);
+		ROLLBACK;
+	END;
+END
+GO
+
+-- Trigger tự động cập nhật số lượng bài học khi có bài học mới -> Trigger không cho phép insert khoá học có giá KM > giá gốc
+CREATE TRIGGER Trg_GiaGocGiaKM
+ON KHOAHOC
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @GiaGoc FLOAT;
+	DECLARE @GiaKhuyenMai FLOAT;
+
+	SELECT @GiaGoc = GIA_GOC, @GiaKhuyenMai = GIA_KM FROM inserted
+
+	IF @GiaGoc <= @GiaKhuyenMai
+	BEGIN
+		RAISERROR (N'Giá khuyến mãi không hợp lệ', 16, 1);
+		ROLLBACK;
+	END;
+END;
