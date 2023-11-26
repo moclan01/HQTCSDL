@@ -3,7 +3,7 @@ SET DATEFORMAT dmy;
 
 -----------------------VIEWS-----------------------
 
--- 1. View danh sách học viên: (linh)
+-- 1. View danh sách học viên: (Linh)
 CREATE VIEW V_hocvien
 AS
 SELECT *
@@ -11,7 +11,7 @@ FROM HOCVIEN
 
 SELECT * FROM V_hocvien
 
--- 2. View chi tiết khoá học: (linh)
+-- 2. View chi tiết khoá học: (Linh)
 CREATE VIEW V_khoahoc
 AS 
 SELECT KHOAHOC.TENKH, KHOAHOC.MOTAKH, KHOAHOC.GIA_GOC, KHOAHOC.GIA_KM, CAPDO.TENCD, THELOAI.TENTL, GIAOVIEN.TENGV
@@ -77,7 +77,7 @@ KHOAHOC
 WHERE
 NGAYTAO <= CURRENT_DATE + 1;
 
--- Câu tự thêm :  cung cấp danh sách các khóa học cùng với mô tả, giáo viên được chỉ định và cấp độ tương ứng.(Toàn)
+-- Câu 9 :  cung cấp danh sách các khóa học cùng với mô tả, giáo viên được chỉ định và cấp độ tương ứng.(Toàn)
 CREATE VIEW COURSE_TEACHER_VIEW AS
 SELECT KH.MAKH, KH.TENKH, KH.MOTAKH,
 		GV.TENGV AS GIAOVIEN_TEN, CD.TENCD AS CAPDO_TEN
@@ -85,9 +85,16 @@ FROM KHOAHOC KH
 JOIN GIAOVIEN GV ON KH.MAGV = GV.MAGV
 JOIN CAPDO CD ON KH.MACD = CD.MACD;
 
+--Câu 10: View tổng số học viên đăng ký cho từng khoá học: (Lợi)
+CREATE VIEW TongSoHocVienDangKy AS
+	SELECT KHOAHOC.MAKH, COUNT(KHOAHOC.MAKH) AS TongDangKy FROM DANGKYHOC
+	INNER JOIN KHOAHOC ON DANGKYHOC.MAKH = KHOAHOC.MAKH
+	GROUP BY KHOAHOC.MAKH
+GO
+
 -----------------------PROCẺDURES-----------------------
 
--- 1. Thêm học viên mới: (linh)
+-- 1. Thêm học viên mới: (Linh)
 CREATE PROCEDURE p_themhocvien
 @mahv varchar(10), @ho nvarchar(255), @ten nvarchar(255), @ngaysinh date, @gioitinh varchar(3), @sdt varchar(11), @dchv nvarchar(255)
 AS
@@ -107,7 +114,7 @@ EXECUTE p_themhocvien @mahv = 'K1313', @ho = 'Tran', @ten = 'Linh', @ngaysinh = 
 
 SELECT * FROM HOCVIEN
 
--- 2. Cập nhật thông tin học viên: (linh)
+-- 2. Cập nhật thông tin học viên: (Linh)
 CREATE PROCEDURE p_capnhat_tthv
 @mahv varchar(10), @ho nvarchar(255), @ten nvarchar(255), @ngaysinh date, @gioitinh varchar(3), @sdt varchar(11), @dchv nvarchar(255)
 AS
@@ -210,23 +217,23 @@ SELECT * FROM BAIHOC WHERE MAKH='AI';
 
 -- câu 9 Stored Procedures:• Cập nhật thông tin giáo viên trong bảng GIAOVIEN dựa trên MAGV.(Toàn)
 
-CREATE PROCEDURE UpdateTeacher (
-   
-	IN teacherId VARCHAR(10),
-    IN newTeacherName NVARCHAR(255),
-    IN newTeacherDescription TEXT,
-    IN newTeacherPhone VARCHAR(11)
-)
+
+
+--câu 10: PROC Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Lợi)
+CREATE PROC TimKiemHocVien 
+	@Ten NVARCHAR(255), 
+	@DCHV NVARCHAR(255),
+	@SDT VARCHAR(11)
+AS
 BEGIN
-    
-    UPDATE GIAOVIEN
-    SET
-        TENGV = newTeacherName,
-        MOTAGV = newTeacherDescription,
-        DTGV = newTeacherPhone
+	SELECT * FROM HOCVIEN
     WHERE
-        MAGV = teacherId;
-END;
+        (@Ten IS NULL OR TEN LIKE '%' + @Ten + '%') AND
+        (@DCHV IS NULL OR DCHV LIKE '%' + @DCHV + '%') AND
+        (@SDT IS NULL OR SDT = @SDT)
+END
+GO
+
 
 -----------------------FUNCTIONS-----------------------
 
@@ -314,6 +321,19 @@ AS
 
 SELECT * FROM dbo.dshv_danhgiakh('AI');
 
+--câu 7: Function tính tổng tiền thanh toán đối với khoá học tương ứng (Lợi)
+CREATE FUNCTION TongTienThanhToan (@MAKH VARCHAR(10))
+RETURNS INT AS
+BEGIN
+	DECLARE @tong INT
+	SELECT @tong = SUM(THANHTOAN.SoTienTT) FROM THANHTOAN
+	INNER JOIN KHOAHOC ON THANHTOAN.MAKH = KHOAHOC.MAKH
+	WHERE KHOAHOC.MAKH = @MAKH
+	GROUP BY THANHTOAN.MAKH
+	RETURN @tong
+END
+GO
+
 --8.	Lấy thông tin bài học mới nhất trong một khoá học: (Bính)
 CREATE FUNCTION f_baiHocMoiNhat(@makh varchar(10))
 RETURNS TABLE
@@ -331,24 +351,19 @@ AS
 
 SELECT * FROM dbo.f_baiHocMoiNhat('AI');
 
+-- câu 9: FUNC Lấy danh sách học viên đã đăng ký và thanh toán cho một khoá học (Lợi)
+CREATE FUNCTION DangKyVaThanhToan()
+RETURNS TABLE AS
+RETURN (
+		SELECT HOCVIEN.* FROM THANHTOAN
+		INNER JOIN DANGKYHOC ON THANHTOAN.MAHV = DANGKYHOC.MAHV AND THANHTOAN.MAKH = DANGKYHOC.MAKH
+		INNER JOIN HOCVIEN ON HOCVIEN.MAHV = THANHTOAN.MAHV AND HOCVIEN.MAHV = DANGKYHOC.MAHV
+		WHERE THANHTOAN.TRANGTHAI = 'PAID'
+	);
+GO
+
 -- câu 10 FUNCTION : Lấy tổng số tiền thanh toán cho một khoá học:(Toàn)
-CREATE FUNCTION total_Thanh_Toan (
-    courseId VARCHAR(10) )
-RETURNS FLOAT
-BEGIN
-    DECLARE totalPayment FLOAT;
 
-    SELECT SUM(SoTienTT)
-    INTO totalPayment
-    FROM THANHTOAN
-    WHERE MAKH = courseId;
-
-    IF totalPayment IS NULL THEN
-        SET totalPayment = 0;
-    END IF;
-
-    RETURN totalPayment;
-END
 
 -----------------------TRIGGERS-----------------------
 -- 1. Trigger tự động xóa các đánh giá khi khoá học bị xóa: (linh)
@@ -423,20 +438,49 @@ end;
 delete from HOCVIEN where MAHV = 'K1312';
 delete from HOCVIEN where MAHV = 'K1103';
 
--- câu 7 trigger: •Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
-CREATE TRIGGER BeforeInsertTeacher
-BEFORE INSERT ON GIAOVIEN
-FOR EACH ROW
+--câu 5: Trigger tên giáo viên không chứa ký tự đặc biệt(Lợi)
+CREATE TRIGGER Trg_KiemTraTenGiaoVien
+ON GIAOVIEN
+AFTER INSERT
+AS
 BEGIN
-    DECLARE containsSpecialChar BOOLEAN;
-    SET containsSpecialChar = REGEXP_CONTAINS(NEW.TENGV, '[^a-zA-Z0-9 ]');
+    SET NOCOUNT ON;
 
-    IF containsSpecialChar THEN
+    IF EXISTS (
+        SELECT 1
+        FROM inserted
+        WHERE PATINDEX('%[^a-zA-Z0-9 ]%', TENGV) > 0
+    )
+    BEGIN
+        RAISERROR (N'Tên giáo viên khôn chứa ký tự đặc biệt', 16, 1);
+        ROLLBACK;
+    END
+END
+GO
 
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Tên giáo viên không được chứa ký tự đặc biệt';
-    END IF;
-END 
+--Câu 6: Trigger kiểm tra trạng thái của học viên trước khi đánh giá (Lợi)
+CREATE TRIGGER Trg_TrangThaiTruocKhiDanhGia
+ON DANHGIA
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @MAHV VARCHAR(10);
+	DECLARE @MAKH VARCHAR(10);
+
+	SELECT @MAHV = MAHV, @MAKH = MAKH FROM inserted
+
+	IF NOT EXISTS (
+		SELECT 1 FROM DANGKYHOC WHERE MAHV = @MAHV AND MAKH = @MAKH
+	)
+	BEGIN
+		RAISERROR (N'Học viên chưa đăng ký học chưa được phép đánh giá', 12, 1);
+		ROLLBACK;
+	END;
+END
+GO
+
+-- câu 7 trigger: •Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
+
 
 --cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
 CREATE or alter TRIGGER trg_checkForNumberPhone ON hocvien
@@ -457,5 +501,25 @@ VALUES
 ('K1313', 'ABC', 'Cuc', '09/06/1986', 'Nu', '12345678911', 'Kien Giang')
 select * from hocvien;
 delete hocvien where mahv = 'K1313';
+
+--Câu 9: Trigger tự động cập nhật số lượng bài học khi có bài học mới -> Trigger không cho phép insert khoá học có giá KM > giá gốc (Lợi)
+CREATE TRIGGER Trg_GiaGocGiaKM
+ON KHOAHOC
+AFTER INSERT
+AS
+BEGIN
+	DECLARE @GiaGoc FLOAT;
+	DECLARE @GiaKhuyenMai FLOAT;
+
+	SELECT @GiaGoc = GIA_GOC, @GiaKhuyenMai = GIA_KM FROM inserted
+
+	IF @GiaGoc <= @GiaKhuyenMai
+	BEGIN
+		RAISERROR (N'Giá khuyến mãi không hợp lệ', 16, 1);
+		ROLLBACK;
+	END;
+END
+GO
+
 
 -- câu 10 trigger • Trước khi thêm đăng ký học mới, trigger này đảm bảo rằng ngày đăng ký không được lớn hơn ngày hiện tại.(Toàn)
