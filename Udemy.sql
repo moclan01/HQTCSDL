@@ -419,5 +419,33 @@ WHERE MAGV='GV05';
 
 SELECT * FROM KHOAHOC;
 --4. Trigger kiểm tra trạng thái học viên trước khi xóa học viên: (bính)
---Trước khi xóa một học viên khỏi bảng HOCVIEN, kiểm tra xem học viên có đang tham gia khoá học nào không. 
+-- Trước khi xóa một học viên khỏi bảng HOCVIEN, kiểm tra xem học viên có đang tham gia khoá học nào không. 
 -- Nếu có, không cho phép xóa.
+CREATE TRIGGER kt_trangthai_hocvien ON HOCVIEN FOR DELETE
+AS
+	BEGIN
+		DECLARE @mahv varchar(10);
+		SET @mahv = (SELECT MAHV FROM deleted);
+
+		
+
+		IF EXISTS (SELECT *
+					FROM deleted
+					WHERE MAHV IN (SELECT MAHV FROM DANGKYHOC)
+					)
+			BEGIN
+				RAISERROR('học viên đang đăng ký khóa học, không thể xóa', 16, 1);
+				ROLLBACK;
+			END
+		ELSE 
+			BEGIN
+			DELETE FROM THANHTOAN WHERE THANHTOAN.MAHV = @mahv;
+			DELETE FROM DANHGIA WHERE DANHGIA.MAHV = @mahv;
+			DELETE FROM HOCVIEN WHERE HOCVIEN.MAHV = @mahv;
+			END
+	END;
+
+DROP TRIGGER kt_trangthai_hocvien;
+
+
+
