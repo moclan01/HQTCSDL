@@ -24,6 +24,25 @@ where KHOAHOC.MAKH = 'Figma';
 
 select * from v_dsdg;
 
+--cau 5. View danh sách đăng ký học và thông tin học viên:(Tâm)
+create view V_hocvien
+as select 
+DANGKYHOC.MADKH, DANGKYHOC.NGAYDANGKY,DANGKYHOC.MAKH,DANGKYHOC.MAHV,
+hocvien.ho,hocvien.ten,hocvien.ngaysinh,hocvien.gioitinh,hocvien.sdt,hocvien.dchv,
+KHOAHOC.TENKH,KHOAHOC.MOTAKH,KHOAHOC.GIA_GOC,KHOAHOC.GIA_KM,KHOAHOC.NGAYTAO,KHOAHOC.MACD,KHOAHOC.MATL,KHOAHOC.MAGV
+from (hocvien inner join DANGKYHOC on DANGKYHOC.MAHV = hocvien.mahv) inner join KHOAHOC on DANGKYHOC.MAKH = KHOAHOC.MAKH;
+
+select * from V_hocvien
+drop view V_hocvien
+
+--cau 6. View tổng thanh toán cho mỗi học viên:(Tâm)
+create view V_tongthanhtoan
+as select hocvien.mahv,sum(THANHTOAN.SoTienTT) as TongThanhToan
+from hocvien inner join THANHTOAN on hocvien.mahv = THANHTOAN.MAHV
+group by hocvien.mahv;
+
+select * from V_tongthanhtoan
+
 --7.View tổng điểm đánh giá (thang điểm 10) và số lượng đánh giá cho mỗi khoá học: (Bính)
 -- Tính tổng điểm và số lượng đánh giá từ bảng DANHGIA theo MAKH.
 CREATE VIEW tongdiem_soluongDanhgia
@@ -52,6 +71,24 @@ execute p_xdg 'DG001';
 select * from DANHGIA;
 
 drop procedure p_xdg;
+
+--cau 4. Đăng ký học(Tâm)
+create procedure sp_themDangKyHoc(@madkh varchar(10),@ngaydangky date,@mahv varchar(10),@makh varchar(10))
+as INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
+	VALUES	(@madkh,@ngaydangky,@mahv,@makh)
+go
+
+exec sp_themDangKyHoc 'DK21','2/1/2003','K1301','DP';
+delete dangkyhoc where madkh ='DK21';
+
+--cau 5 Cập nhật trạng thái thanh toán:(Tâm)
+create procedure sp_trangThaiThanhToan @matt varchar(10), @trangthai varchar(20)
+as 
+	update thanhtoan set trangthai = @trangthai where matt = @matt
+go
+
+exec sp_trangThaiThanhToan 'TT0010', 'NOT PAID';
+
 
 --6.Xóa học viên: (Bính)
  --Xóa một học viên khỏi bảng HOCVIEN và tất cả các thông tin liên quan, 
@@ -137,6 +174,30 @@ end
 
 print(dbo.f_tttthv('K1301'));
 drop function f_tthv;
+
+--cau 4 Lấy danh sách các khoá học mà một học viên đã đăng ký(Tâm)
+create function f_listKhoaHoc (@mahv varchar(10))
+returns table 
+Return 
+select hocvien.mahv, KHOAHOC.* from (KHOAHOC inner join DANGKYHOC on KHOAHOC.MAKH = DANGKYHOC.MAKH) inner join  hocvien on hocvien.mahv = DANGKYHOC.MAHV
+where hocvien.mahv = @mahv
+
+go
+
+select * from f_listKhoaHoc('K1101');
+--cau 5. Tính tổng số bài học trong một khoá học:(Tâm)
+create function f_tongBaiHoc (@makh varchar(10))
+returns numeric
+as
+begin
+	declare @tong numeric
+	select @tong = COUNT(BAIHOC.MAKH)
+	from BAIHOC where BAIHOC.MAKH = @makh
+	return @tong
+end
+go
+select dbo.f_tongBaiHoc('AI');
+select * from BAIHOC
 
 --6.Lấy danh sách các học viên đã đánh giá một khoá học: (Bính)
 CREATE FUNCTION dshv_danhgiakh(@makh varchar(10))
@@ -240,3 +301,25 @@ DROP TRIGGER dangky_khoahoc;
 
 INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
 VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
+
+--cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
+CREATE or alter TRIGGER trg_checkForNumberPhone ON hocvien
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    IF EXISTS (SELECT * FROM inserted WHERE len(sdt) <> 11  OR sdt NOT LIKE '%[^0-9]%' )
+    BEGIN
+        ROLLBACK TRANSACTION;
+        RAISERROR ('số điện thoại của học viên phải có đúng 11 ký tự và chỉ chứa các chữ số', 16, 1);
+        RETURN;
+    END;
+END;
+
+
+INSERT INTO HOCVIEN(MAHV, HO, TEN, NGAYSINH, GIOITINH , SDT, DCHV)
+VALUES
+('K1313', 'ABC', 'Cuc', '09/06/1986', 'Nu', '12345678911', 'Kien Giang')
+select * from hocvien;
+delete hocvien where mahv = 'K1313';
+
+drop trigger trg_checkForNumberPhone;
