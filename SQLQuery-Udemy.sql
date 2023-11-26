@@ -22,24 +22,24 @@ SELECT * FROM V_khoahoc
 
 --3.View danh sách bài học trong một khoá học: (Ngân)
 --Kết hợp thông tin từ bảng BAIHOC và KHOAHOC.
-create view v_dsbh
-as
-select BAIHOC.MABH, BAIHOC.TIEUDEBH, BAIHOC.NOIDUNGBH, BAIHOC.VIDEOBH, BAIHOC.THUTUBH, KHOAHOC.MAKH
-from BAIHOC inner join KHOAHOC on BAIHOC.MAKH = KHOAHOC.MAKH
-where KHOAHOC.MAKH = 'AI';
+CREATE VIEW v_dsbh
+AS
+SELECT BAIHOC.MABH, BAIHOC.TIEUDEBH, BAIHOC.NOIDUNGBH, BAIHOC.VIDEOBH, BAIHOC.THUTUBH, KHOAHOC.MAKH
+FROM BAIHOC INNER JOIN KHOAHOC ON BAIHOC.MAKH = KHOAHOC.MAKH
+WHERE KHOAHOC.MAKH = 'AI';
 
-select * from v_dsbh;
+SELECT * FROM v_dsbh;
 
 --4.View danh sách đánh giá cho một khoá học: (Ngân)
 --Kết hợp thông tin từ bảng DANHGIA, HOCVIEN, và KHOAHOC.
-create view v_dsdg
-as
-select DANHGIA.MADG, DANHGIA.DIEMDG, DANHGIA.BINHLUAN, DANHGIA.NGAYDG, HOCVIEN.MAHV, KHOAHOC.MAKH
-from DANHGIA  inner join KHOAHOC on DANHGIA.MAKH = KHOAHOC.MAKH 
-			  inner join HOCVIEN on DANHGIA.MAHV = HOCVIEN.MAHV
-where KHOAHOC.MAKH = 'Figma';
+CREATE VIEW v_dsdg
+AS
+SELECT DANHGIA.MADG, DANHGIA.DIEMDG, DANHGIA.BINHLUAN, DANHGIA.NGAYDG, HOCVIEN.MAHV, KHOAHOC.MAKH
+FROM DANHGIA  INNER JOIN KHOAHOC ON DANHGIA.MAKH = KHOAHOC.MAKH 
+			  INNER JOIN HOCVIEN ON DANHGIA.MAHV = HOCVIEN.MAHV
+WHERE KHOAHOC.MAKH = 'Figma';
 
-select * from v_dsdg;
+SELECT * FROM v_dsdg;;
 
 --cau 5. View danh sách đăng ký học và thông tin học viên:(Tâm)
 create view V_hocvien
@@ -139,17 +139,15 @@ SELECT * FROM HOCVIEN;
 --3.Xóa đánh giá: (Ngân)
 --Xóa một bản ghi đánh giá từ bảng DANHGIA dựa trên MADG.
 
-create procedure p_xdg @madg varchar(10)
-as
-begin
-	delete from DANHGIA
-	where MADG = @madg
-end;
+CREATE PROCEDURE p_xdg @madg varchar(10)
+AS
+BEGIN
+	DELETE FROM DANHGIA
+	WHERE MADG = @madg
+END;
 
-execute p_xdg 'DG001';
-select * from DANHGIA;
-
-drop procedure p_xdg;
+EXECUTE p_xdg 'DG001';
+SELECT * FROM DANHGIA;
 
 --cau 4. Đăng ký học(Tâm)
 create procedure sp_themDangKyHoc(@madkh varchar(10),@ngaydangky date,@mahv varchar(10),@makh varchar(10))
@@ -248,39 +246,40 @@ GROUP BY DANHGIA.MAKH
 SELECT * FROM f_tongso();
 
 --2.Kiểm tra học viên đã tham gia một khoá học chưa: (Ngân)
-create function f_kthvdk(@mahv varchar(10))
-returns varchar(20)
-as
-begin
-	if exists (select HOCVIEN.MAHV
-		       from HOCVIEN inner join DANGKYHOC on HOCVIEN.MAHV = DANGKYHOC.MAHV
-						    inner join KHOAHOC on DANGKYHOC.MAKH = KHOAHOC.MAKH
-			   where HOCVIEN.MAHV in (select HOCVIEN.MAHV 
-								      from DANGKYHOC inner join HOCVIEN on DANGKYHOC.MAHV = HOCVIEN.MAHV
-								      where DANGKYHOC.MAHV = @mahv)
+CREATE FUNCTION f_kthvdk(@mahv varchar(10))
+RETURNS varchar(20)
+AS
+BEGIN
+	IF EXISTS (SELECT HOCVIEN.MAHV
+		       FROM HOCVIEN INNER JOIN DANGKYHOC ON HOCVIEN.MAHV = DANGKYHOC.MAHV
+						    INNER JOIN KHOAHOC ON DANGKYHOC.MAKH = KHOAHOC.MAKH
+			   WHERE HOCVIEN.MAHV IN (SELECT HOCVIEN.MAHV 
+								      FROM DANGKYHOC INNER JOIN HOCVIEN ON DANGKYHOC.MAHV = HOCVIEN.MAHV
+								      WHERE DANGKYHOC.MAHV = @mahv)
 			  )
-	begin 
-		return 'Da dang ky'
-	end
-	return 'Chua dang ky'
-end;
+	BEGIN 
+		RETURN 'Da dang ky'
+	END
+	RETURN 'Chua dang ky'
+END;
 
-print(dbo.f_kthvdk('K1103'));
+PRINT(dbo.f_kthvdk('K1103'));
+DROP FUNCTION f_kthvdk;
 
 --3.Tính tổng số tiền thanh toán của một học viên: (Ngân)
-create function f_tttthv(@mahv varchar(10))
-returns float
-as
-begin
-	return(
-		select SUM(THANHTOAN.SoTienTT) as Tongtienhocvienthanhtoan
-		from THANHTOAN inner join HOCVIEN on THANHTOAN.MAHV = HOCVIEN.MAHV
-		where THANHTOAN.MAHV = @mahv
-		group by HOCVIEN.MAHV
+CREATE FUNCTION f_tttthv(@mahv varchar(10))
+RETURNS FLOAT
+AS
+BEGIN
+	RETURN(
+		SELECT SUM(THANHTOAN.SoTienTT) AS Tongtienhocvienthanhtoan
+		FROM THANHTOAN INNER JOIN HOCVIEN ON THANHTOAN.MAHV = HOCVIEN.MAHV
+		WHERE THANHTOAN.MAHV = @mahv
+		GROUP BY HOCVIEN.MAHV
 		)
-end
+END
 
-print(dbo.f_tttthv('K1301'));
+PRINT(dbo.f_tttthv('K1301'));
 
 --cau 4 Lấy danh sách các khoá học mà một học viên đã đăng ký(Tâm)
 create function f_listKhoaHoc (@mahv varchar(10))
@@ -378,26 +377,25 @@ END;
 --Trước khi xóa một khoá học khỏi bảng KHOAHOC, 
 --kiểm tra xem có bài học nào liên quan không. 
 --Nếu có, không cho phép xóa.
-create trigger delete_kh on KHOAHOC for delete
-as
-begin
-	declare @makh varchar(10)
-	set @makh = (select MAKH from deleted)
-
-	if exists (select * 
-			   from deleted
-			   where MAKH in (select MAKH from BAIHOC))
-	begin
-		raiserror('Khoa hoc co bai hoc lien quan, khong the xoa', 10,1);
-		rollback;
-	end
-	else
-		begin
-			delete from THANHTOAN where THANHTOAN.MAKH = @makh
-			delete from DANHGIA where DANHGIA.MAKH = @makh
-			delete from DANGKYHOC where DANGKYHOC.MAKH = @makh
-		end;
-end;
+CREATE TRIGGER delete_kh ON KHOAHOC FOR DELETE
+AS
+BEGIN
+	DECLARE @makh varchar(10)
+	SET @makh = (SELECT MAKH FROM deleted)
+	IF EXISTS (SELECT * 
+			   FROM deleted
+			   WHERE MAKH IN (SELECT MAKH FROM BAIHOC))
+	BEGIN
+		RAISERROR('Khoa hoc co bai hoc lien quan, khong the xoa', 10,1);
+		ROLLBACK;
+	END
+	ELSE
+		BEGIN
+			DELETE FROM THANHTOAN WHERE THANHTOAN.MAKH = @makh
+			DELETE FROM DANHGIA WHERE DANHGIA.MAKH = @makh
+			DELETE FROM DANGKYHOC WHERE DANGKYHOC.MAKH = @makh
+		END;
+END;
 
 --CÂU 3: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
 --nếu đã đăng ký rồi thì không cho đăng ký (Bính)
