@@ -465,16 +465,6 @@ as
 															group by mamh)
 go;
 
-create proc p_kqmh @p_mahv varchar(10)
-as 
-select HOCVIEN.MAHV,HOCVIEN.HO, HOCVIEN.TEN, MONHOC.MAMH, MONHOC.TENMH, KETQUATHI.DIEM
-from HOCVIEN inner join KETQUATHI on HOCVIEN.MAHV = KETQUATHI.MAHV
-inner join MONHOC on MONHOC.MAMH = KETQUATHI.MAMH
-where HOCVIEN.MAHV = @p_mahv and KETQUATHI.LANTHI in (select MAX(LANTHI)
-							from KETQUATHI 
-							where KETQUATHI.MAHV = @p_mahv
-							group by MAMH)
-go;
 exec p_kqmh 'K1102'; 
 drop proc p_kqmh;
 

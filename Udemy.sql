@@ -24,7 +24,8 @@ CREATE TABLE KHOAHOC (
 	NGAYTAO DATE NOT NULL,
 	MACD VARCHAR(10) NOT NULL,
 	MATL VARCHAR(10) NOT NULL,
-	MAGV VARCHAR(10) NOT NULL
+	MAGV VARCHAR(10) NOT NULL,
+	TENGV NVARCHAR (255) NOT NULL
 );
 --linh
 -- Cấp độ: mã cấp độ, tên cấp độ
@@ -151,22 +152,22 @@ VALUES
 ('K1312', 'Nguyen Thi Kim', 'Yen', '07/09/1986', 'Nu', '123456789', 'TP.HCM');
 
 --KHÓA HỌC
-INSERT INTO KHOAHOC(MAKH, TENKH, MOTAKH, GIA_GOC, GIA_KM, NGAYTAO, MACD, MATL, MAGV)
+INSERT INTO KHOAHOC(MAKH, TENKH, MOTAKH, GIA_GOC, GIA_KM, NGAYTAO, MACD, MATL, MAGV, TENGV)
 VALUES
 ('AI', 'Học Adobe Illustrator từ cơ bản đến nâng cao', 'Illustrator là phần mềm thiết kế đồ họa chuyên vẽ. Sử dụng các thuật toán, các đối tượng hình học, text kết hợp. Việc kết hợp giữa các hình dạng cơ bản đó với nhau để tạo thành một đối tượng vector'
-, 700000, 1200000,'26/04/2022', 'CD03', 'MATL07','GV03'),
+, 700000, 1200000,'26/04/2022', 'CD03', 'MATL07','GV03','Nguyễn Quang Duy'),
 ('DP', 'Khóa học Digital Paiting cơ bản cho người mới bắt đầu', 'Digital Painting hay còn được gọi là vẽ kỹ thuật số. Đây là một kĩ thuật vẽ mà trong đó hoạ sĩ sẽ sử dụng công nghệ '
-, 500000, 1000000, '26/04/2022', 'CD01', 'MATL05','GV02'),
+, 500000, 1000000, '26/04/2022', 'CD01', 'MATL05','GV02','Nguyễn Mai Phương'),
 ('Figma', 'Nhập môn thiết kế UX/UI, UX-UI Design', 'UX/UI Designer là người đảm nhận vai trò thiết kế trải nghiệm người dùng (User Experience Design) và thiết kế giao diện người dùng (User Interface Design)'
-, 600000, 1000000, '26/04/2022', 'CD01', 'MATL07','GV01'),
+, 600000, 1000000, '26/04/2022', 'CD01', 'MATL07','GV01','Huỳnh Ngọc Thanh'),
 ('Lightroom', 'Khóa học Lightroom - Blend màu và Retouch - Histogram là gì?', 'Lightroom là phần mềm xử lý ảnh cực kỳ mạnh mẽ và là người anh em với phần mềm Adobe Photoshop'
-, 300000, 600000, '26/04/2022', 'CD01', 'MATL08','GV05'),
+, 300000, 600000, '26/04/2022', 'CD01', 'MATL08','GV05','Nguyên Bính'),
 ('NA', 'Nhiếp ảnh cơ bản cho người mới bắt đầu', 'Nhiếp ảnh là quá trình tạo ra hình ảnh bằng tác động của ánh sáng với phim hoặc thiết bị nhạy sáng'
-, 800000, 1600000, '26/04/2022', 'CD02', 'MATL08','GV04'),
+, 800000, 1600000, '26/04/2022', 'CD02', 'MATL08','GV04','Tô Phương Linh'),
 ('PTS', 'Khóa học giúp bạn làm chủ Photoshop từ A - Z', 'Adobe Photoshop có thể được xem là phần mềm xử lý ảnh nổi tiếng nhất trên thị trường'
-, 1200000, 2000000, '26/04/2022', 'CD03', 'MATL07','GV06'),
+, 1200000, 2000000, '26/04/2022', 'CD03', 'MATL07','GV06','Trần Thắng Lợi'),
 ('AE', 'Học kỹ xảo trong sản xuất video bằng Adobe After Effects', 'Adobe After Effects là phần mềm đồ họa chuyển động số và đồ họa tổng hợp, được phát triển bởi hãng Adobe Systems.'
-, 1000000, 1500000, '26/04/2022', 'CD03', 'MATL05','GV07');
+, 1000000, 1500000, '26/04/2022', 'CD03', 'MATL05','GV07','Nguyễn Việt Toàn');
 
 -- CẤP ĐỘ
 INSERT INTO CAPDO(MACD, TENCD)
@@ -337,13 +338,33 @@ DROP PROC xoa_hocvien;
 
 --8.Thêm bài học mới: (bính) 
 --	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
-CREATE PROC themBaiHocMoi @mabh varchar(10), @makh varchar(10)
+CREATE PROC themBaiHocMoi @mabh varchar(10), @tieude nvarchar(255), 
+							@noidung text, @video nvarchar(255),
+							@thutu int, @makh varchar(10)
 AS
-
+	SET @makh = (SELECT MAKH	
+					FROM BAIHOC
+					WHERE EXISTS(SELECT MAKH
+								FROM BAIHOC)
+					)
+	IF NOT EXISTS (SELECT MABH,THUTUBH 
+					FROM BAIHOC 
+					WHERE MABH = @mabh AND @thutu IN (SELECT THUTUBH 
+														FROM BAIHOC 
+														WHERE MAKH = @makh) 
+											) 
+		BEGIN
+		INSERT INTO BAIHOC(MABH, TIEUDEBH, NOIDUNGBH, VIDEOBH, THUTUBH, MAKH)
+		VALUES (@mabh, @tieude, @noidung, @video, @thutu, @makh);
+		END
 GO;
 
-EXEC themBaiHocMoi;
+EXEC themBaiHocMoi 'AI04', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',4,'AI';
+EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',5,'AI';
+EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',5,'AI';
+DROP PROC themBaiHocMoi;
 
+SELECT * FROM BAIHOC WHERE MAKH='AI';
 --FUNCTIONS
 --6.Lấy danh sách các học viên đã đánh giá một khoá học: (bính)
 CREATE FUNCTION dshv_danhgiakh(@makh varchar(10))
@@ -376,3 +397,27 @@ AS
 
 SELECT * FROM dbo.f_baiHocMoiNhat('AI');
 DROP FUNCTION f_baiHocMoiNhat;
+
+--TRIGGERS
+--3. Trigger tự động cập nhật thông tin giáo viên khi có thay đổi: (bính)
+-- Khi thông tin của một giáo viên trong bảng GIAOVIEN được cập nhật, 
+-- tự động cập nhật thông tin giáo viên trong các bảng KHOAHOC.
+CREATE TRIGGER update_gv ON GIAOVIEN AFTER INSERT,UPDATE
+AS
+BEGIN
+	IF UPDATE(TENGV) OR UPDATE(MOTAGV) OR UPDATE(DTGV)
+		BEGIN
+			UPDATE KHOAHOC
+			SET TENGV = inserted.TENGV
+			FROM KHOAHOC INNER JOIN inserted ON KHOAHOC.MAGV = inserted.MAGV
+		END;
+END
+
+UPDATE GIAOVIEN
+SET TENGV='Nguyễn Văn Bính', DTGV='1111111111'
+WHERE MAGV='GV05';
+
+SELECT * FROM KHOAHOC;
+--4. Trigger kiểm tra trạng thái học viên trước khi xóa học viên: (bính)
+--Trước khi xóa một học viên khỏi bảng HOCVIEN, kiểm tra xem học viên có đang tham gia khoá học nào không. 
+-- Nếu có, không cho phép xóa.
