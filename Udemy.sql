@@ -152,22 +152,22 @@ VALUES
 ('K1312', 'Nguyen Thi Kim', 'Yen', '07/09/1986', 'Nu', '123456789', 'TP.HCM');
 
 --KHÓA HỌC
-INSERT INTO KHOAHOC(MAKH, TENKH, MOTAKH, GIA_GOC, GIA_KM, NGAYTAO, MACD, MATL, MAGV, TENGV)
+INSERT INTO KHOAHOC(MAKH, TENKH, MOTAKH, GIA_GOC, GIA_KM, NGAYTAO, MACD, MATL, MAGV)
 VALUES
 ('AI', 'Học Adobe Illustrator từ cơ bản đến nâng cao', 'Illustrator là phần mềm thiết kế đồ họa chuyên vẽ. Sử dụng các thuật toán, các đối tượng hình học, text kết hợp. Việc kết hợp giữa các hình dạng cơ bản đó với nhau để tạo thành một đối tượng vector'
-, 700000, 1200000,'26/04/2022', 'CD03', 'MATL07','GV03','Nguyễn Quang Duy'),
+, 1200000, 700000,'26/04/2022', 'CD03', 'MATL07','GV03'),
 ('DP', 'Khóa học Digital Paiting cơ bản cho người mới bắt đầu', 'Digital Painting hay còn được gọi là vẽ kỹ thuật số. Đây là một kĩ thuật vẽ mà trong đó hoạ sĩ sẽ sử dụng công nghệ '
-, 500000, 1000000, '26/04/2022', 'CD01', 'MATL05','GV02','Nguyễn Mai Phương'),
+, 1000000, 500000, '26/04/2022', 'CD01', 'MATL05','GV02'),
 ('Figma', 'Nhập môn thiết kế UX/UI, UX-UI Design', 'UX/UI Designer là người đảm nhận vai trò thiết kế trải nghiệm người dùng (User Experience Design) và thiết kế giao diện người dùng (User Interface Design)'
-, 600000, 1000000, '26/04/2022', 'CD01', 'MATL07','GV01','Huỳnh Ngọc Thanh'),
+, 1000000, 600000, '26/04/2022', 'CD01', 'MATL07','GV01'),
 ('Lightroom', 'Khóa học Lightroom - Blend màu và Retouch - Histogram là gì?', 'Lightroom là phần mềm xử lý ảnh cực kỳ mạnh mẽ và là người anh em với phần mềm Adobe Photoshop'
-, 300000, 600000, '26/04/2022', 'CD01', 'MATL08','GV05','Nguyên Bính'),
+, 600000, 300000, '26/04/2022', 'CD01', 'MATL08','GV05'),
 ('NA', 'Nhiếp ảnh cơ bản cho người mới bắt đầu', 'Nhiếp ảnh là quá trình tạo ra hình ảnh bằng tác động của ánh sáng với phim hoặc thiết bị nhạy sáng'
-, 800000, 1600000, '26/04/2022', 'CD02', 'MATL08','GV04','Tô Phương Linh'),
+, 1600000, 800000, '26/04/2022', 'CD02', 'MATL08','GV04'),
 ('PTS', 'Khóa học giúp bạn làm chủ Photoshop từ A - Z', 'Adobe Photoshop có thể được xem là phần mềm xử lý ảnh nổi tiếng nhất trên thị trường'
-, 1200000, 2000000, '26/04/2022', 'CD03', 'MATL07','GV06','Trần Thắng Lợi'),
+, 2000000, 1200000, '26/04/2022', 'CD03', 'MATL07','GV06'),
 ('AE', 'Học kỹ xảo trong sản xuất video bằng Adobe After Effects', 'Adobe After Effects là phần mềm đồ họa chuyển động số và đồ họa tổng hợp, được phát triển bởi hãng Adobe Systems.'
-, 1000000, 1500000, '26/04/2022', 'CD03', 'MATL05','GV07','Nguyễn Việt Toàn');
+, 1500000, 1000000, '26/04/2022', 'CD03', 'MATL05','GV07');
 
 -- CẤP ĐỘ
 INSERT INTO CAPDO(MACD, TENCD)
@@ -297,16 +297,26 @@ VALUES
 --THANH TOÁN
 INSERT INTO THANHTOAN (MATT, SOTIENTT, NGAYTT, TRANGTHAI, MAHV, MAKH)
 VALUES 
-('TT001', 700000, '4/11/2020', 'PAID', 'K1306', 'AE'),
-('TT002', 300000, '4/11/2020', 'NOT PAID', 'K1206', 'DP'),
-('TT003', 500000, '5/11/2020', 'NOT PAID', 'K1208', 'PTS'),
-('TT004', 1000000, '3/11/2020', 'PAID', 'K1305', 'AI'),
-('TT005', 700000, '2/11/2020', 'PAID', 'K1204', 'AI'),
-('TT006', 500000, '5/11/2020', 'PAID', 'K1105', 'NA'),
-('TT007', 900000, '4/11/2020', 'NOT PAID', 'K1301', 'Lightroom'),
-('TT008', 700000, '3/11/2020', 'PAID', 'K1203', 'Figma'),
-('TT009', 500000, '2/11/2020', 'PAID', 'K1106', 'Figma'),
-('TT0010', 300000, '4/11/2020', 'NOT PAID', 'K1109', 'NA');
+('TT001', 1200000, '24/9/2023', 'PAID', 'K1101', 'AI'),
+('TT002', 1200000, '20/11/2023', 'NOT PAID', 'K1101', 'AI'),
+('TT003', 1000000, '15/12/2022', 'NOT PAID', 'K1102', 'DP'),
+('TT004', 1000000, '10/10/2022', 'PAID', 'K1103', 'Figma'),
+('TT005', 1000000, '5/12/2021', 'PAID', 'K1103', 'Figma'),
+('TT006', 1000000, '2/11/2023', 'PAID', 'K1103', 'Figma'),
+('TT007', 600000, '12/11/2022', 'NOT PAID', 'K1304', 'Lightroom'),
+('TT008', 2000000, '24/04/2023', 'PAID', 'K1201', 'PTS'),
+('TT009', 1500000, '15/07/2022', 'PAID', 'K1106', 'AE'),
+('TT010', 1500000, '18/12/2022', 'PAID', 'K1310', 'AE'),
+('TT011', 1200000, '20/9/2023', 'PAID', 'K1311', 'AI'),
+('TT012', 1200000, '11/11/2023', 'NOT PAID', 'K1211', 'AI'),
+('TT013', 1000000, '8/12/2022', 'PAID', 'K1204', 'DP'),
+('TT014', 1600000, '3/07/2022', 'PAID', 'K1209', 'NA'),
+('TT015', 1600000, '5/1/2021', 'NOT PAID', 'K1203', 'NA'),
+('TT016', 2000000, '2/1/2023', 'PAID', 'K1203', 'PTS'),
+('TT017', 600000, '2/11/2022', 'NOT PAID', 'K1302', 'Lightroom'),
+('TT018', 2000000, '4/08/2023', 'PAID', 'K1301', 'PTS'),
+('TT019', 600000, '11/08/2022', 'PAID', 'K1306', 'Lightroom'),
+('TT020', 1000000, '17/07/2022', 'PAID', 'K1301', 'DP');
 
 --VIEWS
 --7.View tổng điểm đánh giá (thang điểm 10) và số lượng đánh giá cho mỗi khoá học: (bính)
