@@ -399,53 +399,45 @@ SELECT * FROM dbo.f_baiHocMoiNhat('AI');
 DROP FUNCTION f_baiHocMoiNhat;
 
 --TRIGGERS
---3. Trigger tự động cập nhật thông tin giáo viên khi có thay đổi: (bính)
--- Khi thông tin của một giáo viên trong bảng GIAOVIEN được cập nhật, 
--- tự động cập nhật thông tin giáo viên trong các bảng KHOAHOC.
-CREATE TRIGGER update_gv ON GIAOVIEN AFTER INSERT,UPDATE
-AS
-BEGIN
-	IF UPDATE(TENGV) OR UPDATE(MOTAGV) OR UPDATE(DTGV)
-		BEGIN
-			UPDATE KHOAHOC
-			SET TENGV = inserted.TENGV
-			FROM KHOAHOC INNER JOIN inserted ON KHOAHOC.MAGV = inserted.MAGV
-		END;
-END
-
-UPDATE GIAOVIEN
-SET TENGV='Nguyễn Văn Bính', DTGV='1111111111'
-WHERE MAGV='GV05';
-
-SELECT * FROM KHOAHOC;
 --4. Trigger kiểm tra trạng thái học viên trước khi xóa học viên: (bính)
 -- Trước khi xóa một học viên khỏi bảng HOCVIEN, kiểm tra xem học viên có đang tham gia khoá học nào không. 
 -- Nếu có, không cho phép xóa.
-CREATE TRIGGER kt_trangthai_hocvien ON HOCVIEN FOR DELETE
-AS
-	BEGIN
-		DECLARE @mahv varchar(10);
-		SET @mahv = (SELECT MAHV FROM deleted);
 
-		
-
-		IF EXISTS (SELECT *
-					FROM deleted
-					WHERE MAHV IN (SELECT MAHV FROM DANGKYHOC)
-					)
-			BEGIN
+CREATE TRIGGER kt_trangthai_hocvien ON HOCVIEN instead of DELETE
+as
+begin
+	declare @mahv varchar(10);
+	set @mahv = (select mahv from deleted);
+	if exists (select DANGKYHOC.MAHV
+				from DANGKYHOC
+				where DANGKYHOC.MAHV = @mahv)
+			begin
 				RAISERROR('học viên đang đăng ký khóa học, không thể xóa', 16, 1);
 				ROLLBACK;
-			END
-		ELSE 
-			BEGIN
-			DELETE FROM THANHTOAN WHERE THANHTOAN.MAHV = @mahv;
-			DELETE FROM DANHGIA WHERE DANHGIA.MAHV = @mahv;
-			DELETE FROM HOCVIEN WHERE HOCVIEN.MAHV = @mahv;
-			END
-	END;
+			end;
+end;
+
+delete from HOCVIEN where MAHV = 'K1312';
 
 DROP TRIGGER kt_trangthai_hocvien;
 
+--CÂU TỰ TẠO: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
+--nếu đã đăng ký rồi thì không cho đăng ký
+CREATE TRIGGER dangky_khoahoc ON DANGKYHOC AFTER INSERT,UPDATE
+AS
+	BEGIN
+		DECLARE @makh varchar(10), @mahv varchar(10);
+		SET @makh = (SELECT MAKH FROM inserted);
+		SET @mahv = (SELECT MAHV FROM inserted);
+		IF((select count(madkh) from dangkyhoc where mahv = @mahv and MAKH = @makh) > 1)
+		BEGIN
+			RAISERROR('học viên này đã đăng ký khóa học này', 16,1);
+			ROLLBACK;
+		END
+END;
 
+DROP TRIGGER dangky_khoahoc;
+
+INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
+VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
 
