@@ -182,7 +182,19 @@ EXEC xoa_hocvien 'k1101';
 SELECT * FROM HOCVIEN;
 
 -- câu 7 Stored Procedures: • Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
-
+CREATE PROCEDURE Tim_kiem
+    @searchKeyword NVARCHAR(255)
+AS
+BEGIN
+    SELECT *
+    FROM HOCVIEN
+    WHERE
+        HO LIKE '%' + @searchKeyword + '%'
+        OR TEN LIKE '%' + @searchKeyword + '%'
+        OR DCHV LIKE '%' + @searchKeyword + '%'
+        OR SDT LIKE '%' + @searchKeyword + '%';
+END
+GO
 
 --8.Thêm bài học mới: (Bính) 
 --	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
@@ -214,8 +226,22 @@ EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hi�
 SELECT * FROM BAIHOC WHERE MAKH='AI';
 
 -- câu 9 Stored Procedures:• Cập nhật thông tin giáo viên trong bảng GIAOVIEN dựa trên MAGV.(Toàn)
-
-
+CREATE PROCEDURE UpdateTeacherInfo
+    @teacherId VARCHAR(10),
+    @newTeacherName NVARCHAR(255),
+    @newTeacherDescription TEXT,
+    @newTeacherPhone VARCHAR(11)
+AS
+BEGIN
+    UPDATE GIAOVIEN
+    SET 
+        TENGV = @newTeacherName,
+        MOTAGV = @newTeacherDescription,
+        DTGV = @newTeacherPhone
+    WHERE 
+        MAGV = @teacherId;
+END
+GO
 
 --câu 10: PROC Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Lợi)
 CREATE PROC TimKiemHocVien 
@@ -362,7 +388,22 @@ RETURN (
 GO
 
 -- câu 10 FUNCTION : Lấy tổng số tiền thanh toán cho một khoá học:(Toàn)
+CREATE FUNCTION dbo.total_Thanh_Toan
+(
+    @courseId VARCHAR(10)
+)
+RETURNS FLOAT
+AS
+BEGIN
+    DECLARE @totalPayment FLOAT;
 
+    SELECT @totalPayment = ISNULL(SUM(SoTienTT), 0)
+    FROM THANHTOAN
+    WHERE MAKH = @courseId;
+
+    RETURN @totalPayment;
+END
+GO
 
 -----------------------TRIGGERS-----------------------
 -- 1. Trigger tự động xóa các đánh giá khi khoá học bị xóa: (linh)
@@ -478,7 +519,27 @@ END
 GO
 
 -- câu 7 trigger: •Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
+CREATE TRIGGER TruocThemGV
+ON GIAOVIEN
+INSTEAD OF INSERT
+AS
+BEGIN
+    DECLARE @containsSpecialChar BIT;
 
+    SELECT @containsSpecialChar = CASE WHEN PATINDEX('%[^a-zA-Z0-9 ]%', i.TENGV) > 0 THEN 1 ELSE 0 END
+    FROM INSERTED i;
+
+    IF @containsSpecialChar = 1
+    BEGIN
+        RAISERROR ('Tên giáo viên không được chứa ký tự đặc biệt', 16, 1);
+        RETURN;
+    END;
+    
+    INSERT INTO GIAOVIEN (MAGV, TENGV, MOTAGV, DTGV)
+    SELECT MAGV, TENGV, MOTAGV, DTGV
+    FROM INSERTED;
+END
+GO
 
 --cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
 CREATE or alter TRIGGER trg_checkForNumberPhone ON hocvien
@@ -521,3 +582,22 @@ GO
 
 
 -- câu 10 trigger • Trước khi thêm đăng ký học mới, trigger này đảm bảo rằng ngày đăng ký không được lớn hơn ngày hiện tại.(Toàn)
+CREATE TRIGGER TruocDangKyHoc
+ON DANGKYHOC
+INSTEAD OF INSERT
+AS
+BEGIN
+    DECLARE @currentDate DATE;
+    SET @currentDate = GETDATE();
+
+    IF EXISTS (SELECT 1 FROM inserted WHERE NGAYDANGKY > @currentDate)
+    BEGIN
+        RAISERROR ('Ngày đăng ký không được lớn hơn ngày hiện tại', 16, 1);
+        RETURN;
+    END;
+
+    INSERT INTO DANGKYHOC (MADKH, NGAYDANGKY, MAHV, MAKH)
+    SELECT MADKH, NGAYDANGKY, MAHV, MAKH
+    FROM inserted;
+END
+GO
