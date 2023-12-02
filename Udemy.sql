@@ -510,7 +510,7 @@ GO;
 EXEC xoa_hocvien 'k1101';
 SELECT * FROM HOCVIEN;
 
--- câu 7 Stored Procedures: • Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
+-- câu 7  Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
 CREATE PROCEDURE Tim_kiem
     @searchKeyword NVARCHAR(255)
 AS
@@ -847,7 +847,7 @@ BEGIN
 END
 GO
 
--- câu 7 trigger: •Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
+-- câu 7 Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
 CREATE TRIGGER TruocThemGV
 ON GIAOVIEN
 INSTEAD OF INSERT
@@ -871,7 +871,6 @@ END
 GO
 
 --cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
---CAU 8. KIỂM TRA SỐ ĐIỆN THOẠI HỢP LỆ
 CREATE OR ALTER TRIGGER TRG_CHECKFORNUMBERPHONE ON HOCVIEN
 AFTER INSERT, UPDATE
 AS
