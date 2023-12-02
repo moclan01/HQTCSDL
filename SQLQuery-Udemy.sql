@@ -42,23 +42,23 @@ WHERE KHOAHOC.MAKH = 'Figma';
 SELECT * FROM v_dsdg;;
 
 --cau 5. View danh sách đăng ký học và thông tin học viên:(Tâm)
-create view V_hocvien
-as select 
+CREATE VIEW V_HOCVIEN
+AS SELECT 
 DANGKYHOC.MADKH, DANGKYHOC.NGAYDANGKY,DANGKYHOC.MAKH,DANGKYHOC.MAHV,
-hocvien.ho,hocvien.ten,hocvien.ngaysinh,hocvien.gioitinh,hocvien.sdt,hocvien.dchv,
+HOCVIEN.HO,HOCVIEN.TEN,HOCVIEN.NGAYSINH,HOCVIEN.GIOITINH,HOCVIEN.SDT,HOCVIEN.DCHV,
 KHOAHOC.TENKH,KHOAHOC.MOTAKH,KHOAHOC.GIA_GOC,KHOAHOC.GIA_KM,KHOAHOC.NGAYTAO,KHOAHOC.MACD,KHOAHOC.MATL,KHOAHOC.MAGV
-from (hocvien inner join DANGKYHOC on DANGKYHOC.MAHV = hocvien.mahv) inner join KHOAHOC on DANGKYHOC.MAKH = KHOAHOC.MAKH;
+FROM (HOCVIEN INNER JOIN DANGKYHOC ON DANGKYHOC.MAHV = HOCVIEN.MAHV) INNER JOIN KHOAHOC ON DANGKYHOC.MAKH = KHOAHOC.MAKH;
 
-select * from V_hocvien;
+
+SELECT * FROM V_HOCVIEN
 
 --cau 6. View tổng thanh toán cho mỗi học viên:(Tâm)
-create view V_tongthanhtoan
-as select hocvien.mahv,sum(THANHTOAN.SoTienTT) as TongThanhToan
-from hocvien inner join THANHTOAN on hocvien.mahv = THANHTOAN.MAHV
-group by hocvien.mahv;
+CREATE VIEW V_TONGTHANHTOAN
+AS SELECT HOCVIEN.MAHV,SUM(THANHTOAN.SOTIENTT) AS TONGTHANHTOAN
+FROM HOCVIEN INNER JOIN THANHTOAN ON HOCVIEN.MAHV = THANHTOAN.MAHV
+GROUP BY HOCVIEN.MAHV;
 
-select * from V_tongthanhtoan
-
+SELECT * FROM V_TONGTHANHTOAN
 --7.View tổng điểm đánh giá (thang điểm 10) và số lượng đánh giá cho mỗi khoá học: (Bính)
 -- Tính tổng điểm và số lượng đánh giá từ bảng DANHGIA theo MAKH.
 CREATE VIEW tongdiem_soluongDanhgia
@@ -150,22 +150,22 @@ EXECUTE p_xdg 'DG001';
 SELECT * FROM DANHGIA;
 
 --cau 4. Đăng ký học(Tâm)
-create procedure sp_themDangKyHoc(@madkh varchar(10),@ngaydangky date,@mahv varchar(10),@makh varchar(10))
-as INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
-	VALUES	(@madkh,@ngaydangky,@mahv,@makh)
-go
+CREATE PROCEDURE SP_THEMDANGKYHOC(@MADKH VARCHAR(10),@NGAYDANGKY DATE,@MAHV VARCHAR(10),@MAKH VARCHAR(10))
+AS INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
+	VALUES	(@MADKH,@NGAYDANGKY,@MAHV,@MAKH)
+GO
 
-exec sp_themDangKyHoc 'DK21','2/1/2003','K1301','DP';
-delete dangkyhoc where madkh ='DK21';
+EXEC SP_THEMDANGKYHOC 'DK21','2/1/2003','K1301','DP';
+DELETE DANGKYHOC WHERE MADKH ='DK21';
 
 --cau 5 Cập nhật trạng thái thanh toán:(Tâm)
-create procedure sp_trangThaiThanhToan @matt varchar(10), @trangthai varchar(20)
-as 
-	update thanhtoan set trangthai = @trangthai where matt = @matt
-go
+CREATE PROCEDURE SP_TRANGTHAITHANHTOAN @MATT VARCHAR(10), @TRANGTHAI VARCHAR(20)
+AS 
+	UPDATE THANHTOAN SET TRANGTHAI = @TRANGTHAI WHERE MATT = @MATT
+GO
 
-exec sp_trangThaiThanhToan 'TT0010', 'NOT PAID';
-
+EXEC SP_TRANGTHAITHANHTOAN 'TT0010', 'NOT PAID';
+EXEC SP_TRANGTHAITHANHTOAN 'TT0010', 'PAID';
 
 --6.Xóa học viên: (Bính)
  --Xóa một học viên khỏi bảng HOCVIEN và tất cả các thông tin liên quan, 
@@ -308,29 +308,29 @@ END
 PRINT(dbo.f_tttthv('K1301'));
 
 --cau 4 Lấy danh sách các khoá học mà một học viên đã đăng ký(Tâm)
-create function f_listKhoaHoc (@mahv varchar(10))
-returns table 
-Return 
-select hocvien.mahv, KHOAHOC.* from (KHOAHOC inner join DANGKYHOC on KHOAHOC.MAKH = DANGKYHOC.MAKH) inner join  hocvien on hocvien.mahv = DANGKYHOC.MAHV
-where hocvien.mahv = @mahv
+REATE FUNCTION F_LISTKHOAHOC (@MAHV VARCHAR(10))
+RETURNS TABLE 
+RETURN 
+SELECT HOCVIEN.MAHV, KHOAHOC.* FROM (KHOAHOC INNER JOIN DANGKYHOC ON KHOAHOC.MAKH = DANGKYHOC.MAKH) INNER JOIN  HOCVIEN ON HOCVIEN.MAHV = DANGKYHOC.MAHV
+WHERE HOCVIEN.MAHV = @MAHV
 
-go
+GO
 
-select * from f_listKhoaHoc('K1101');
+SELECT * FROM F_LISTKHOAHOC('K1101');
 
 --cau 5. Tính tổng số bài học trong một khoá học:(Tâm)
-create function f_tongBaiHoc (@makh varchar(10))
-returns numeric
-as
-begin
-	declare @tong numeric
-	select @tong = COUNT(BAIHOC.MAKH)
-	from BAIHOC where BAIHOC.MAKH = @makh
-	return @tong
-end
-go
-select dbo.f_tongBaiHoc('AI');
-select * from BAIHOC
+CREATE FUNCTION F_TONGBAIHOC (@MAKH VARCHAR(10))
+RETURNS NUMERIC
+AS
+BEGIN
+	DECLARE @TONG NUMERIC
+	SELECT @TONG = COUNT(BAIHOC.MAKH)
+	FROM BAIHOC WHERE BAIHOC.MAKH = @MAKH
+	RETURN @TONG
+END
+GO
+SELECT DBO.F_TONGBAIHOC('AI');
+SELECT * FROM BAIHOC
 
 --6.Lấy danh sách các học viên đã đánh giá một khoá học: (Bính)
 CREATE FUNCTION dshv_danhgiakh(@makh varchar(10))
@@ -461,21 +461,21 @@ VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
 -- Nếu có, không cho phép xóa.
 
 CREATE TRIGGER kt_trangthai_hocvien ON HOCVIEN instead of DELETE
-as
-begin
-	declare @mahv varchar(10);
-	set @mahv = (select mahv from deleted);
-	if exists (select DANGKYHOC.MAHV
-				from DANGKYHOC
-				where DANGKYHOC.MAHV = @mahv)
-			begin
+AS
+BEGIN
+	DECLARE @mahv varchar(10);
+	SET @mahv = (SELECT mahv FROM deleted);
+	IF EXISTS (SELECT DANGKYHOC.MAHV
+				FROM DANGKYHOC
+				WHERE DANGKYHOC.MAHV = @mahv)
+			BEGIN
 				RAISERROR('học viên đang đăng ký khóa học, không thể xóa', 16, 1);
 				ROLLBACK;
-			end;
-end;
+			END;
+END;
 
-delete from HOCVIEN where MAHV = 'K1312';
-delete from HOCVIEN where MAHV = 'K1103';
+DELETE FROM HOCVIEN WHERE MAHV = 'K1312';
+DELETE FROM HOCVIEN WHERE MAHV = 'K1103';
 
 --câu 5: Trigger tên giáo viên không chứa ký tự đặc biệt(Lợi)
 CREATE TRIGGER Trg_KiemTraTenGiaoVien
@@ -542,24 +542,30 @@ END
 GO
 
 --cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
-CREATE or alter TRIGGER trg_checkForNumberPhone ON hocvien
+--CAU 8. KIỂM TRA SỐ ĐIỆN THOẠI HỢP LỆ
+CREATE OR ALTER TRIGGER TRG_CHECKFORNUMBERPHONE ON HOCVIEN
 AFTER INSERT, UPDATE
 AS
 BEGIN
-    IF EXISTS (SELECT * FROM inserted WHERE len(sdt) <> 11  OR sdt NOT LIKE '%[^0-9]%' )
+	DECLARE @SDT_HV VARCHAR(11);
+	SET @SDT_HV = (SELECT SDT FROM INSERTED);
+    IF  LEN(@SDT_HV) = 11  AND @SDT_HV NOT LIKE '%[^0-9]%'  
     BEGIN
+    PRINT 'Số điện thoại hợp lệ.';
+END
+ELSE
+BEGIN
         ROLLBACK TRANSACTION;
-        RAISERROR ('số điện thoại của học viên phải có đúng 11 ký tự và chỉ chứa các chữ số', 16, 1);
+        RAISERROR ('SỐ ĐIỆN THOẠI CỦA HỌC VIÊN PHẢI CÓ ĐÚNG 11 KÝ TỰ VÀ CHỈ CHỨA CÁC CHỮ SỐ', 16, 1);
         RETURN;
     END;
 END;
 
-
 INSERT INTO HOCVIEN(MAHV, HO, TEN, NGAYSINH, GIOITINH , SDT, DCHV)
 VALUES
-('K1313', 'ABC', 'Cuc', '09/06/1986', 'Nu', '12345678911', 'Kien Giang')
-select * from hocvien;
-delete hocvien where mahv = 'K1313';
+('K1313', 'ABC', 'CUC', '09/06/1986', 'NU', '12345678119', 'KIEN GIANG')
+SELECT * FROM HOCVIEN;
+DELETE HOCVIEN WHERE MAHV = 'K1313'
 
 --Câu 9: Trigger tự động cập nhật số lượng bài học khi có bài học mới -> Trigger không cho phép insert khoá học có giá KM > giá gốc (Lợi)
 CREATE TRIGGER Trg_GiaGocGiaKM
