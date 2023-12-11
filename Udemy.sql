@@ -1,4 +1,5 @@
-﻿use Udemy;
+﻿--use Udemy;
+use Demo;
 SET DATEFORMAT dmy; 
 --------------------------------------------TABLES--------------------------------------------
 
@@ -311,6 +312,7 @@ VALUES
 ('TT019', 600000, '11/08/2022', 'PAID', 'K1306', 'Lightroom'),
 ('TT020', 1000000, '17/07/2022', 'PAID', 'K1301', 'DP');
 
+GO
 ---------------------------------------------FOREIGN KEY--------------------------------------------
 
 ALTER TABLE KHOAHOC ADD FOREIGN KEY (MACD) REFERENCES CAPDO (MACD);
@@ -328,11 +330,12 @@ ALTER TABLE DANHGIA ADD FOREIGN KEY (MAKH) REFERENCES KHOAHOC (MAKH);
 ALTER TABLE THANHTOAN ADD FOREIGN KEY (MAHV) REFERENCES HOCVIEN (MAHV);
 ALTER TABLE THANHTOAN ADD FOREIGN KEY (MAKH) REFERENCES KHOAHOC (MAKH);
 
+GO
 ---------------------------------------------QUERIES--------------------------------------------
 
 -----------------------VIEWS-----------------------
 
--- 1. View danh sách học viên: (Linh)
+--Câu 1: View danh sách học viên: (Linh)
 CREATE VIEW V_hocvien
 AS
 	SELECT *
@@ -340,9 +343,7 @@ AS
 
 GO
 
-SELECT * FROM V_hocvien;
-
--- 2. View chi tiết khoá học: (Linh)
+--Câu 2: View chi tiết khoá học: (Linh)
 CREATE VIEW V_khoahoc
 AS 
 	SELECT KHOAHOC.TENKH, KHOAHOC.MOTAKH, KHOAHOC.GIA_GOC, KHOAHOC.GIA_KM, CAPDO.TENCD, THELOAI.TENTL, GIAOVIEN.TENGV
@@ -351,11 +352,9 @@ AS
 
 GO
 
-SELECT * FROM V_khoahoc;
-
---3.View danh sách bài học trong một khoá học: (Ngân)
+--Câu 3: View danh sách bài học trong một khoá học: (Ngân)
 --Kết hợp thông tin từ bảng BAIHOC và KHOAHOC.
-CREATE VIEW v_dsbh
+CREATE VIEW V_DS_BAIHOC
 AS
 	SELECT BAIHOC.MABH, BAIHOC.TIEUDEBH, BAIHOC.NOIDUNGBH, BAIHOC.VIDEOBH, BAIHOC.THUTUBH, KHOAHOC.MAKH
 	FROM BAIHOC INNER JOIN KHOAHOC ON BAIHOC.MAKH = KHOAHOC.MAKH
@@ -363,11 +362,9 @@ AS
  
 GO
 
-SELECT * FROM v_dsbh;
-
---4.View danh sách đánh giá cho một khoá học: (Ngân)
+--Câu 4: View danh sách đánh giá cho một khoá học: (Ngân)
 --Kết hợp thông tin từ bảng DANHGIA, HOCVIEN, và KHOAHOC.
-CREATE VIEW v_dsdg
+CREATE VIEW V_DS_DANHGIA
 AS
 	SELECT DANHGIA.MADG, DANHGIA.DIEMDG, DANHGIA.BINHLUAN, DANHGIA.NGAYDG, HOCVIEN.MAHV, KHOAHOC.MAKH
 	FROM DANHGIA  INNER JOIN KHOAHOC ON DANHGIA.MAKH = KHOAHOC.MAKH 
@@ -376,10 +373,8 @@ AS
 
 GO
 
-SELECT * FROM v_dsdg;;
-
---cau 5. View danh sách đăng ký học và thông tin học viên:(Tâm)
-CREATE VIEW V_HOCVIEN
+--Câu 5: View danh sách đăng ký học và thông tin học viên:(Tâm)
+CREATE VIEW V_DK_TT_HOCVIEN
 AS 
 	SELECT DANGKYHOC.MADKH, DANGKYHOC.NGAYDANGKY,DANGKYHOC.MAKH,DANGKYHOC.MAHV,
 			HOCVIEN.HO,HOCVIEN.TEN,HOCVIEN.NGAYSINH,HOCVIEN.GIOITINH,HOCVIEN.SDT,HOCVIEN.DCHV,
@@ -388,9 +383,7 @@ AS
 
 GO
 
-SELECT * FROM V_HOCVIEN
-
---cau 6. View tổng thanh toán cho mỗi học viên:(Tâm)
+--Câu 6: View tổng thanh toán cho mỗi học viên:(Tâm)
 CREATE VIEW V_TONGTHANHTOAN
 AS 
 	SELECT HOCVIEN.MAHV,SUM(THANHTOAN.SOTIENTT) AS TONGTHANHTOAN
@@ -399,11 +392,9 @@ AS
 
 GO
 
-SELECT * FROM V_TONGTHANHTOAN;
-
---7.View tổng điểm đánh giá (thang điểm 10) và số lượng đánh giá cho mỗi khoá học: (Bính)
+--Câu 7: View tổng điểm đánh giá (thang điểm 10) và số lượng đánh giá cho mỗi khoá học: (Bính)
 -- Tính tổng điểm và số lượng đánh giá từ bảng DANHGIA theo MAKH.
-CREATE VIEW tongdiem_soluongDanhgia
+CREATE VIEW V_TONGDIEM_SLDANHGIA
 AS
 	SELECT KHOAHOC.MAKH, AVG(DANHGIA.DIEMDG) AS TONGDIEMDG , COUNT(DANHGIA.MADG) AS SLDANHGIA
 	FROM DANHGIA INNER JOIN KHOAHOC ON DANHGIA.MAKH = KHOAHOC.MAKH
@@ -411,8 +402,7 @@ AS
 
 GO
 
-SELECT * FROM tongdiem_soluongDanhgia;
--- câu 8 view •	Hiển thị thông tin từ bảng KHOAHOC với điều kiện NGAYTAO <= ngày hiện tại.(Toàn)
+--Câu 8: Hiển thị thông tin từ bảng KHOAHOC với điều kiện NGAYTAO <= ngày hiện tại.(Toàn)
 CREATE VIEW THONG_TIN_KHOA_HOC AS
 	SELECT MAKH,TENKH,MOTAKH,GIA_GOC,GIA_KM,NGAYTAO,MACD,MATL,MAGV	
 	FROM KHOAHOC
@@ -420,7 +410,7 @@ CREATE VIEW THONG_TIN_KHOA_HOC AS
 
 GO
 
--- Câu 9 :  cung cấp danh sách các khóa học cùng với mô tả, giáo viên được chỉ định và cấp độ tương ứng.(Toàn)
+--Câu 9:  cung cấp danh sách các khóa học cùng với mô tả, giáo viên được chỉ định và cấp độ tương ứng.(Toàn)
 CREATE VIEW COURSE_TEACHER_VIEW AS
 	SELECT KH.MAKH, KH.TENKH, KH.MOTAKH,
 			GV.TENGV AS GIAOVIEN_TEN, CD.TENCD AS CAPDO_TEN
@@ -431,17 +421,17 @@ CREATE VIEW COURSE_TEACHER_VIEW AS
 GO
 
 --Câu 10: View tổng số học viên đăng ký cho từng khoá học: (Lợi)
-CREATE VIEW TongSoHocVienDangKy AS
+CREATE VIEW V_TONGSOHOCVIEN_DK AS
 	SELECT KHOAHOC.MAKH, COUNT(KHOAHOC.MAKH) AS TongDangKy 
 	FROM DANGKYHOC INNER JOIN KHOAHOC ON DANGKYHOC.MAKH = KHOAHOC.MAKH
 	GROUP BY KHOAHOC.MAKH;
 
 GO
 
------------------------PROCẺDURES-----------------------
+-----------------------PROCEDURES-----------------------
 
--- 1. Thêm học viên mới: (Linh)
-CREATE PROCEDURE p_themhocvien
+--Câu 1: Thêm học viên mới: (Linh)
+CREATE PROCEDURE P_THEMHOCVIEN
 @mahv varchar(10), @ho nvarchar(255), @ten nvarchar(255), @ngaysinh date, @gioitinh varchar(3), @sdt varchar(11), @dchv nvarchar(255)
 AS
 BEGIN
@@ -458,11 +448,8 @@ END;
 
 GO
 
-EXECUTE p_themhocvien @mahv = 'K1313', @ho = 'Tran', @ten = 'Linh', @ngaysinh = '24/04/2003', @gioitinh = 'nu', @sdt = '123456789', @dchv = 'TP.HCM'
-SELECT * FROM HOCVIEN
-
--- 2. Cập nhật thông tin học viên: (Linh)
-CREATE PROCEDURE p_capnhat_tthv
+--Câu 2: Cập nhật thông tin học viên: (Linh)
+CREATE PROCEDURE P_CAPNHAT_TTHV
 @mahv varchar(10), @ho nvarchar(255), @ten nvarchar(255), @ngaysinh date, @gioitinh varchar(3), @sdt varchar(11), @dchv nvarchar(255)
 AS
 BEGIN
@@ -480,12 +467,9 @@ END;
 
 GO
 
-EXECUTE p_capnhat_tthv @mahv = 'K1314', @ho = 'Tran', @ten = 'C', @ngaysinh = '24/04/2003', @gioitinh = 'nu', @sdt = '123456789', @dchv = 'TP.HCM'
-SELECT * FROM HOCVIEN;
-
---3.Xóa đánh giá: (Ngân)
+--Câu 3: Xóa đánh giá: (Ngân)
 --Xóa một bản ghi đánh giá từ bảng DANHGIA dựa trên MADG.
-CREATE PROCEDURE p_xdg @madg varchar(10)
+CREATE PROCEDURE P_XOA_DANHGIA @madg varchar(10)
 AS
 BEGIN
 	DELETE FROM DANHGIA
@@ -494,10 +478,7 @@ END;
 
 GO
 
-EXECUTE p_xdg 'DG001';
-SELECT * FROM DANHGIA;
-
---cau 4. Đăng ký học(Tâm)
+--Câu 4: Đăng ký học(Tâm)
 CREATE PROCEDURE SP_THEMDANGKYHOC(@MADKH VARCHAR(10),@NGAYDANGKY DATE,@MAHV VARCHAR(10),@MAKH VARCHAR(10))
 AS 
 	INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
@@ -505,23 +486,18 @@ AS
 
 GO
 
-EXEC SP_THEMDANGKYHOC 'DK21','2/1/2003','K1301','DP';
-DELETE DANGKYHOC WHERE MADKH ='DK21';
 
---cau 5 Cập nhật trạng thái thanh toán:(Tâm)
+--Câu 5: Cập nhật trạng thái thanh toán:(Tâm)
 CREATE PROCEDURE SP_TRANGTHAITHANHTOAN @MATT VARCHAR(10), @TRANGTHAI VARCHAR(20)
 AS 
 	UPDATE THANHTOAN SET TRANGTHAI = @TRANGTHAI WHERE MATT = @MATT;
 
 GO
 
-EXEC SP_TRANGTHAITHANHTOAN 'TT0010', 'NOT PAID';
-EXEC SP_TRANGTHAITHANHTOAN 'TT0010', 'PAID';
-
---6.Xóa học viên: (Bính)
+--Câu 6: Xóa học viên: (Bính)
  --Xóa một học viên khỏi bảng HOCVIEN và tất cả các thông tin liên quan, 
  --chẳng hạn như đăng ký học, thanh toán, và đánh giá.
-CREATE PROC xoa_hocvien @mahv varchar(10)
+CREATE PROC P_XOA_HV @mahv varchar(10)
 AS
 	DELETE FROM HOCVIEN WHERE HOCVIEN.MAHV = @mahv;
 	DELETE FROM DANGKYHOC WHERE DANGKYHOC.MAHV = @mahv;
@@ -530,11 +506,8 @@ AS
 
 GO
 
-EXEC xoa_hocvien 'k1101';
-SELECT * FROM HOCVIEN;
-
--- câu 7  Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
-CREATE PROCEDURE Tim_kiem
+--Câu 7: Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Toàn)
+CREATE PROCEDURE P_TIMKIEM
     @searchKeyword NVARCHAR(255)
 AS
 BEGIN
@@ -549,9 +522,9 @@ END;
 
 GO
 
---8.Thêm bài học mới: (Bính) 
+--Câu 8: Thêm bài học mới: (Bính) 
 --	Thêm một bài học mới vào bảng BAIHOC của một khoá học cụ thể.
-CREATE PROC themBaiHocMoi @mabh varchar(10), @tieude nvarchar(255), 
+CREATE PROC P_THEM_BAIHOCMOI @mabh varchar(10), @tieude nvarchar(255), 
 							@noidung text, @video nvarchar(255),
 							@thutu int, @makh varchar(10)
 AS
@@ -573,14 +546,8 @@ AS
 
 GO
 
-EXEC themBaiHocMoi 'AI04', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',4,'AI';
-EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',5,'AI';
-EXEC themBaiHocMoi 'AI05', 'Bài 4: Hiệu Chỉnh Vùng Nhìn, Chế Độ Hiển Thị', 'Hiệu Chỉnh','https://youtu.be/tVlZz61zS9s?si=A6bHQEG2b9XGmYpE',5,'AI';
-
-SELECT * FROM BAIHOC WHERE MAKH='AI';
-
--- câu 9 Stored Procedures:• Cập nhật thông tin giáo viên trong bảng GIAOVIEN dựa trên MAGV.(Toàn)
-CREATE PROCEDURE UpdateTeacherInfo
+--Câu 9: Cập nhật thông tin giáo viên trong bảng GIAOVIEN dựa trên MAGV.(Toàn)
+CREATE PROCEDURE P_CAPNHAT_TTGV
     @teacherId VARCHAR(10),
     @newTeacherName NVARCHAR(255),
     @newTeacherDescription TEXT,
@@ -598,8 +565,8 @@ END;
 
 GO
 
---câu 10: PROC Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Lợi)
-CREATE PROC TimKiemHocVien 
+--Câu 10: PROC Tìm kiếm và trả về danh sách học viên dựa trên các điều kiện như tên, địa chỉ, hoặc số điện thoại.(Lợi)
+CREATE PROC P_TIMKIEM_HOCVIEN
 	@Ten NVARCHAR(255), 
 	@DCHV NVARCHAR(255),
 	@SDT VARCHAR(11)
@@ -617,8 +584,8 @@ GO
 
 -----------------------FUNCTIONS-----------------------
 
---1. Tính tổng số đánh giá cho một khoá học: (Linh)
-CREATE FUNCTION f_tongso()
+--Câu 1: Tính tổng số đánh giá cho một khoá học: (Linh)
+CREATE FUNCTION F_TONGSO()
 RETURNS TABLE
 RETURN 
 	SELECT DANHGIA.MAKH, COUNT(DANHGIA.MADG) AS 'Tổng số đánh giá'
@@ -627,10 +594,8 @@ RETURN
 
 GO
 
-SELECT * FROM f_tongso();
-
---2.Kiểm tra học viên đã tham gia một khoá học chưa: (Ngân)
-CREATE FUNCTION f_kthvdk(@mahv varchar(10))
+--Câu 2: Kiểm tra học viên đã tham gia một khoá học chưa: (Ngân)
+CREATE FUNCTION F_KIEMTRA_HOCVIEN(@mahv varchar(10))
 RETURNS varchar(20)
 AS
 	BEGIN
@@ -649,11 +614,8 @@ AS
 
 GO
 
-PRINT(dbo.f_kthvdk('K1103'));
---DROP FUNCTION f_kthvdk;
-
---3.Tính tổng số tiền thanh toán của một học viên: (Ngân)
-CREATE FUNCTION f_tttthv(@mahv varchar(10))
+--Câu 3: Tính tổng số tiền thanh toán của một học viên: (Ngân)
+CREATE FUNCTION F_TINH_TSTTT(@mahv varchar(10))
 RETURNS FLOAT
 AS
 BEGIN
@@ -667,10 +629,8 @@ END;
 
 GO
 
-PRINT(dbo.f_tttthv('K1301'));
-
---cau 4 Lấy danh sách các khoá học mà một học viên đã đăng ký(Tâm)
-REATE FUNCTION F_LISTKHOAHOC (@MAHV VARCHAR(10))
+--Câu 4: Lấy danh sách các khoá học mà một học viên đã đăng ký(Tâm)
+CREATE FUNCTION F_LISTKHOAHOC (@MAHV VARCHAR(10))
 RETURNS TABLE 
 RETURN 
 SELECT HOCVIEN.MAHV, KHOAHOC.* FROM (KHOAHOC INNER JOIN DANGKYHOC ON KHOAHOC.MAKH = DANGKYHOC.MAKH) INNER JOIN  HOCVIEN ON HOCVIEN.MAHV = DANGKYHOC.MAHV
@@ -678,9 +638,7 @@ WHERE HOCVIEN.MAHV = @MAHV;
 
 GO
 
-SELECT * FROM F_LISTKHOAHOC('K1101');
-
---cau 5. Tính tổng số bài học trong một khoá học:(Tâm)
+--Câu 5: Tính tổng số bài học trong một khoá học:(Tâm)
 CREATE FUNCTION F_TONGBAIHOC (@MAKH VARCHAR(10))
 RETURNS NUMERIC
 AS
@@ -693,11 +651,8 @@ END;
 
 GO
 
-SELECT DBO.F_TONGBAIHOC('AI');
-SELECT * FROM BAIHOC
-
---6.Lấy danh sách các học viên đã đánh giá một khoá học: (Bính)
-CREATE FUNCTION dshv_danhgiakh(@makh varchar(10))
+--Câu 6: Lấy danh sách các học viên đã đánh giá một khoá học: (Bính)
+CREATE FUNCTION F_DSHV_DANHGIA_KH(@makh varchar(10))
 RETURNS TABLE
 AS
 	RETURN(
@@ -709,10 +664,8 @@ AS
 
 GO
 
-SELECT * FROM dbo.dshv_danhgiakh('AI');
-
---câu 7: Function tính tổng tiền thanh toán đối với khoá học tương ứng (Lợi)
-CREATE FUNCTION TongTienThanhToan (@MAKH VARCHAR(10))
+--Câu 7: Function tính tổng tiền thanh toán đối với khoá học tương ứng (Lợi)
+CREATE FUNCTION F_TONGTIENTHANHTOAN (@MAKH VARCHAR(10))
 RETURNS INT AS
 BEGIN
 	DECLARE @tong INT
@@ -725,8 +678,8 @@ END;
 
 GO
 
---8.	Lấy thông tin bài học mới nhất trong một khoá học: (Bính)
-CREATE FUNCTION f_baiHocMoiNhat(@makh varchar(10))
+--Câu 8: Lấy thông tin bài học mới nhất trong một khoá học: (Bính)
+CREATE FUNCTION F_BAIHOCMOINHAT (@makh varchar(10))
 RETURNS TABLE
 AS
 	RETURN(
@@ -742,10 +695,8 @@ AS
 
 GO
 
-SELECT * FROM dbo.f_baiHocMoiNhat('AI');
-
--- câu 9: FUNC Lấy danh sách học viên đã đăng ký và thanh toán cho một khoá học (Lợi)
-CREATE FUNCTION DangKyVaThanhToan()
+--Câu 9: Lấy danh sách học viên đã đăng ký và thanh toán cho một khoá học (Lợi)
+CREATE FUNCTION F_DANGKY_THANHTOAN()
 RETURNS TABLE AS
 RETURN (
 		SELECT HOCVIEN.* FROM THANHTOAN
@@ -756,8 +707,8 @@ RETURN (
 
 GO
 
--- câu 10 FUNCTION : Lấy tổng số tiền thanh toán cho một khoá học:(Toàn)
-CREATE FUNCTION dbo.total_Thanh_Toan
+-- Câu 10: Lấy tổng số tiền thanh toán cho một khoá học:(Toàn)
+CREATE FUNCTION F_TONGTIENTHANHTOAN
 (
     @courseId VARCHAR(10)
 )
@@ -776,8 +727,8 @@ END;
 GO
 
 -----------------------TRIGGERS-----------------------
--- 1. Trigger tự động xóa các đánh giá khi khoá học bị xóa: (linh)
-CREATE TRIGGER t_tudongxoa ON KHOAHOC AFTER DELETE
+--Câu 1: Trigger tự động xóa các đánh giá khi khoá học bị xóa: (linh)
+CREATE TRIGGER T_TUDONGXOA ON KHOAHOC AFTER DELETE
 AS 
 BEGIN 
 	DELETE FROM DANHGIA
@@ -786,11 +737,11 @@ END;
 
 GO
 
---2.Trigger kiểm tra số lượng bài học trước khi xóa khoá học: (Ngân)
+--Câu 2: Trigger kiểm tra số lượng bài học trước khi xóa khoá học: (Ngân)
 --Trước khi xóa một khoá học khỏi bảng KHOAHOC, 
 --kiểm tra xem có bài học nào liên quan không. 
 --Nếu có, không cho phép xóa.
-CREATE TRIGGER delete_kh ON KHOAHOC FOR DELETE
+CREATE TRIGGER T_XOA_KH ON KHOAHOC FOR DELETE
 AS
 BEGIN
 	DECLARE @makh varchar(10)
@@ -812,9 +763,9 @@ END;
 
 GO
 
---CÂU 3: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
+--Câu 3: Tạo trigger kiểm tra xem khóa học mà một học viên đó đăng ký hay chưa, 
 --nếu đã đăng ký rồi thì không cho đăng ký (Bính)
-CREATE TRIGGER dangky_khoahoc ON DANGKYHOC AFTER INSERT,UPDATE
+CREATE TRIGGER T_DANGKYKH ON DANGKYHOC AFTER INSERT,UPDATE
 AS
 	BEGIN
 		DECLARE @makh varchar(10), @mahv varchar(10);
@@ -829,14 +780,11 @@ END;
 
 GO
 
-INSERT INTO DANGKYHOC(MADKH, NGAYDANGKY, MAHV, MAKH)
-VALUES ('DK26', '10/10/2022', 'K1308', 'Figma');
-
---4. Trigger kiểm tra trạng thái học viên trước khi xóa học viên: (Bính)
+--Câu 4: Trigger kiểm tra trạng thái học viên trước khi xóa học viên: (Bính)
 -- Trước khi xóa một học viên khỏi bảng HOCVIEN, kiểm tra xem học viên có đang tham gia khoá học nào không. 
 -- Nếu có, không cho phép xóa.
 
-CREATE TRIGGER kt_trangthai_hocvien ON HOCVIEN instead of DELETE
+CREATE TRIGGER T_KT_TRANGTHAI_HOCVIEN ON HOCVIEN instead of DELETE
 AS
 BEGIN
 	DECLARE @mahv varchar(10);
@@ -852,11 +800,8 @@ END;
 
 GO
 
-DELETE FROM HOCVIEN WHERE MAHV = 'K1312';
-DELETE FROM HOCVIEN WHERE MAHV = 'K1103';
-
---câu 5: Trigger tên giáo viên không chứa ký tự đặc biệt(Lợi)
-CREATE TRIGGER Trg_KiemTraTenGiaoVien
+--Câu 5: Trigger tên giáo viên không chứa ký tự đặc biệt(Lợi)
+CREATE TRIGGER T_KIEMTRA_TENGV
 ON GIAOVIEN
 AFTER INSERT
 AS
@@ -877,7 +822,7 @@ END;
 GO
 
 --Câu 6: Trigger kiểm tra trạng thái của học viên trước khi đánh giá (Lợi)
-CREATE TRIGGER Trg_TrangThaiTruocKhiDanhGia
+CREATE TRIGGER T_TRANGTHAI_TRUOCDANHGIA
 ON DANHGIA
 AFTER INSERT
 AS
@@ -898,8 +843,8 @@ END;
 
 GO
 
--- câu 7 Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
-CREATE TRIGGER TruocThemGV
+-- Câu 7: Trước khi thêm giáo viên mới, trigger này đảm bảo rằng tên giáo viên không chứa bất kỳ ký tự đặc biệt nào.(Toàn)
+CREATE TRIGGER T_THEM_GV
 ON GIAOVIEN
 INSTEAD OF INSERT
 AS
@@ -922,8 +867,8 @@ END;
 
 GO
 
---cau 8. kiểm tra số điện thoại hợp lệ(Tâm)
-CREATE OR ALTER TRIGGER TRG_CHECKFORNUMBERPHONE ON HOCVIEN
+--Câu 8: kiểm tra số điện thoại hợp lệ(Tâm)
+CREATE OR ALTER TRIGGER T_KIEMTRA_SDT ON HOCVIEN
 AFTER INSERT, UPDATE
 AS
 BEGIN
@@ -943,14 +888,8 @@ END;
 
 GO
 
-INSERT INTO HOCVIEN(MAHV, HO, TEN, NGAYSINH, GIOITINH , SDT, DCHV)
-VALUES
-('K1313', 'ABC', 'CUC', '09/06/1986', 'NU', '12345678119', 'KIEN GIANG')
-SELECT * FROM HOCVIEN;
-DELETE HOCVIEN WHERE MAHV = 'K1313'
-
 --Câu 9: Trigger tự động cập nhật số lượng bài học khi có bài học mới -> Trigger không cho phép insert khoá học có giá KM > giá gốc (Lợi)
-CREATE TRIGGER Trg_GiaGocGiaKM
+CREATE TRIGGER T_GIAGOC_GIAKM
 ON KHOAHOC
 AFTER INSERT
 AS
@@ -970,8 +909,8 @@ END;
 GO
 
 
--- câu 10 trigger • Trước khi thêm đăng ký học mới, trigger này đảm bảo rằng ngày đăng ký không được lớn hơn ngày hiện tại.(Toàn)
-CREATE TRIGGER TruocDangKyHoc
+-- Câu 10: Trước khi thêm đăng ký học mới, trigger này đảm bảo rằng ngày đăng ký không được lớn hơn ngày hiện tại.(Toàn)
+CREATE TRIGGER T_KIEMTRA_NGAY
 ON DANGKYHOC
 INSTEAD OF INSERT
 AS
